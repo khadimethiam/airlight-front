@@ -1,0 +1,61 @@
+<aside class="sidebar">
+  <!-- Section du logo -->
+  <div class="sidebar-header">
+    <div class="logo-icon-wrapper me-2">
+      <i class="fas fa-wind text-white"></i>
+    </div>
+    <span class="fw-bold fs-5 text-white">AirLight</span>
+  </div>
+
+  <!-- Liens de navigation -->
+  <nav class="sidebar-nav">
+    <ul>
+      <li>
+        <!-- routerLinkActive="active" ajoute la classe 'active' quand ce lien est actif -->
+        <a routerLink="overview" routerLinkActive="active">
+          <i class="fas fa-tachometer-alt fa-fw me-3"></i>
+          <span>Vue d'ensemble</span>
+        </a>
+      </li>
+      <li>
+        <a routerLink="sensors" routerLinkActive="active">
+          <i class="fas fa-broadcast-tower fa-fw me-3"></i>
+          <span>Capteurs</span>
+        </a>
+      </li>
+      <li>
+        <a routerLink="alerts" routerLinkActive="active">
+          <i class="fas fa-exclamation-triangle fa-fw me-3"></i>
+          <span>Alertes</span>
+        </a>
+      </li>
+      <li>
+        <a routerLink="predictions" routerLinkActive="active">
+          <i class="fas fa-brain fa-fw me-3"></i>
+          <span>Prédictions IA</span>
+        </a>
+      </li>
+      <!-- Nous ajouterons un *ngIf pour le lien admin plus tard -->
+      <li *ngIf="isAdmin$ | async">
+        <a routerLink="admin" routerLinkActive="active">
+          <i class="fas fa-user-shield fa-fw me-3"></i>
+          <span>Administration</span>
+        </a>
+      </li>
+    </ul>
+  </nav>
+
+  <!-- Section utilisateur et déconnexion -->
+  <div class="sidebar-footer" *ngIf="user$ | async as user">
+    <div class="user-info">
+      <img [src]="user.avatar || 'https://i.pravatar.cc/32?u=' + user.id" alt="Avatar" class="user-avatar">
+      <div class="user-details">
+        <span class="user-name">{{ user.firstName }} {{ user.lastName }}</span>
+        <span class="user-role">{{ user.role }}</span>
+      </div>
+    </div>
+    <button (click)="logout()" class="logout-button" title="Se déconnecter">
+      <i class="fas fa-sign-out-alt"></i>
+    </button>
+  </div>
+</aside>

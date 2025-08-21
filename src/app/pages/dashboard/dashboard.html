@@ -1,8 +1,10 @@
-<div class="d-flex flex-column justify-content-center align-items-center vh-100 bg-light">
-  <h1 class="display-4 fw-bold">Dashboard</h1>
-  <p class="lead text-muted">Cette page est en cours de construction.</p>
-  <a routerLink="/" class="btn btn-primary mt-3">
-    <i class="fas fa-arrow-left me-2"></i>
-    Retour à l'accueil
-  </a>
+<div class="dashboard-layout">
+  <!-- La barre de navigation latérale -->
+  <app-sidebar></app-sidebar>
+
+  <!-- Le conteneur pour le contenu principal de chaque vue -->
+  <main class="dashboard-main-content">
+    <!-- Le router-outlet affichera le composant de la route enfant active (ex: DashboardOverviewComponent) -->
+    <router-outlet></router-outlet>
+  </main>
 </div>

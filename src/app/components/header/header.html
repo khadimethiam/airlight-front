@@ -1,4 +1,3 @@
-<!-- Utilise les classes de Bootstrap pour une barre de navigation responsive et fixe -->
 <nav class="navbar navbar-expand-lg navbar-light bg-white bg-opacity-90 backdrop-blur-sm shadow-sm fixed-top">
   <div class="container">
     <!-- Logo -->
@@ -9,30 +8,43 @@
       <span class="fw-bold fs-5 text-dark">AirLight</span>
     </a>
 
-    <!-- Bouton pour le menu mobile (hamburger) -->
+    <!-- Bouton pour le menu mobile -->
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
 
-    <!-- Contenu du menu qui se réduit sur mobile -->
+    <!-- Contenu du menu -->
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav ms-auto align-items-lg-center">
-        <!-- Liens de navigation pour le défilement -->
-        <li class="nav-item">
-          <a class="nav-link" href="#weather" (click)="scrollToSection($event, 'weather')">Météo</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="#airQuality" (click)="scrollToSection($event, 'airQuality')">Qualité de l'Air</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="#healthTips" (click)="scrollToSection($event, 'healthTips')">Conseils</a>
-        </li>
-        <li class="nav-item mt-2 mt-lg-0 ms-lg-3">
-          <a class="btn btn-outline-primary px-4" routerLink="/auth">Se connecter</a>
-        </li>   
-        <li class="nav-item mt-2 mt-lg-0 ms-lg-2">
-          <a class="btn btn-primary text-white px-4" routerLink="/auth">S'enregistrer</a>
-        </li>
+        <!-- ... (liens de navigation Météo, etc.) ... -->
+        
+        <!-- On utilise *ngIf pour afficher conditionnellement les boutons -->
+        <!-- Le 'let user' crée une variable locale 'user' avec les données de l'observable -->
+        <ng-container *ngIf="user$ | async as user; else notLoggedIn">
+          <!-- **SI L'UTILISATEUR EST CONNECTÉ** -->
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <img [src]="user.avatar || 'https://i.pravatar.cc/32?u=' + user.id" alt="Avatar" class="rounded-circle me-2" width="32" height="32">
+              {{ user.firstName }}
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+              <li><a class="dropdown-item" routerLink="/dashboard"><i class="fas fa-tachometer-alt fa-fw me-2"></i>Dashboard</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <!-- Nous ajouterons la méthode de déconnexion ici plus tard -->
+              <li><a class="dropdown-item" href="#"><i class="fas fa-sign-out-alt fa-fw me-2"></i>Déconnexion</a></li>
+            </ul>
+          </li>
+        </ng-container>
+
+        <ng-template #notLoggedIn>
+          <!-- **SI L'UTILISATEUR N'EST PAS CONNECTÉ** -->
+          <li class="nav-item mt-2 mt-lg-0 ms-lg-3">
+            <a class="btn btn-outline-primary px-4" routerLink="/auth">Se connecter</a>
+          </li>
+          <li class="nav-item mt-2 mt-lg-0 ms-lg-2">
+            <a class="btn btn-primary text-white px-4" routerLink="/auth">S'enregistrer</a>
+          </li>
+        </ng-template>
       </ul>
     </div>
   </div>

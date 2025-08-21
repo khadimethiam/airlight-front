@@ -1,11 +1,15 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { RouterOutlet } from '@angular/router';
+import { RouterLink, RouterLinkActive } from '@angular/router';
+import { Sidebar } from '../../components/sidebar/sidebar';
+import { DashboardOverview } from '../dashboard-overview/dashboard-overview';
+
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, RouterOutlet, Sidebar],
   templateUrl: './dashboard.html',
   styleUrls: ['./dashboard.css']
 })

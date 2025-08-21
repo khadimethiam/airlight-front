@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, BehaviorSubject, tap } from 'rxjs';
+import { Observable, BehaviorSubject, tap ,map} from 'rxjs';
 import { Router } from '@angular/router';
 
 // Interface pour la réponse de l'API de connexion/inscription
@@ -28,12 +28,19 @@ export class AuthService {
   // BehaviorSubject pour suivre l'état de connexion de l'utilisateur en temps réel
   private userSubject = new BehaviorSubject<any | null>(null );
   public user$ = this.userSubject.asObservable(); // Observable public
+  
+
+  public isAdmin$: Observable<boolean>;
+  
 
   constructor(
     private http: HttpClient,
     private router: Router
    ) {
     // Au démarrage du service, on vérifie si un token existe dans le localStorage
+    this.isAdmin$ = this.user$.pipe(
+      map(user => !!user && user.role === 'admin')
+    );
     this.loadInitialUser();
   }
 

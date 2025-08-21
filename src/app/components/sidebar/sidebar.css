@@ -1,0 +1,125 @@
+.sidebar {
+  width: 260px;
+  background-color: #1e293b; /* Un bleu nuit/gris foncé */
+  color: #e2e8f0; /* Texte clair */
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0; /* Empêche la sidebar de rétrécir */
+}
+
+.sidebar-header {
+  padding: 1.5rem;
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid #334155;
+}
+
+.logo-icon-wrapper {
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, #3b82f6, #10b981); /* Bleu et vert */
+  border-radius: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sidebar-nav {
+  flex-grow: 1;
+  padding: 1rem 0;
+}
+
+.sidebar-nav ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.sidebar-nav a {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 1.5rem;
+  color: #94a3b8; /* Couleur de lien plus douce */
+  text-decoration: none;
+  transition: all 0.2s ease-in-out;
+  border-left: 3px solid transparent;
+}
+
+.sidebar-nav a:hover {
+  background-color: #334155;
+  color: #f1f5f9;
+}
+
+/* Style du lien actif */
+.sidebar-nav a.active {
+  background-color: #2563eb; /* Bleu vif */
+  color: #ffffff;
+  border-left-color: #60a5fa; /* Bordure bleue claire */
+  font-weight: 500;
+}
+
+.sidebar-footer {
+  padding: 1.5rem;
+  border-top: 1px solid #334155;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.user-avatar {
+  width: 32px;
+  height: 32px;
+  background-color: #475569;
+  border-radius: 50%;
+}
+
+.logout-button {
+  background: none;
+  border: none;
+  color: #94a3b8;
+  font-size: 1.25rem;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.logout-button:hover {
+  color: #f1f5f9;
+}
+/* ... (styles existants) ... */
+
+.user-avatar {
+  width: 40px; /* Un peu plus grand */
+  height: 40px;
+  background-color: #475569;
+  border-radius: 50%;
+  border: 2px solid #64748b; /* Ajoute une petite bordure */
+  object-fit: cover; /* S'assure que l'image de l'avatar remplit bien le cercle */
+}
+
+.user-details {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+  flex-grow: 1; /* Pour que le nom ne soit pas coupé */
+  overflow: hidden; /* Empêche le texte de déborder */
+}
+
+.user-name {
+  font-weight: 600;
+  color: #f1f5f9;
+  white-space: nowrap; /* Empêche le retour à la ligne */
+  overflow: hidden;
+  text-overflow: ellipsis; /* Ajoute "..." si le nom est trop long */
+}
+
+.user-role {
+  font-size: 0.75rem;
+  color: #94a3b8;
+  text-transform: capitalize; /* Met la première lettre en majuscule */
+}

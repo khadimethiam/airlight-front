@@ -2,8 +2,10 @@
 import { Routes } from '@angular/router';
 import { Landing } from './pages/landing/landing';
 import { Dashboard } from './pages/dashboard/dashboard';
+import { DashboardOverview } from './pages/dashboard-overview/dashboard-overview';
 import { Auth } from './pages/auth/auth';
 import { AuthCallback } from './pages/auth-callback/auth-callback';
+import { authGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
     {
@@ -25,7 +27,21 @@ export const routes: Routes = [
     {
         path: 'dashboard', // La route du tableau de bord (ex: http://localhost:4200/dashboard )
         component: Dashboard,
-        title: 'AirLight - Dashboard'
+        title: 'AirLight - Dashboard',
+        canActivate: [authGuard], // On ajoute la garde d'authentification
+children: [ // <-- Déclaration des routes enfants
+            {
+                path: '', // La route par défaut du dashboard (ex: /dashboard)
+                redirectTo: 'overview', // Redirige vers la vue d'ensemble
+                pathMatch: 'full'
+            },
+            {
+                path: 'overview', // La route /dashboard/overview
+                component: DashboardOverview,
+                title: 'Dashboard - Vue d\'ensemble'
+            },
+            // Nous ajouterons les autres routes (capteurs, alertes...) ici plus tard
+        ]
     },
     {
         path: '**', // Redirige toute autre URL vers la page d'accueil

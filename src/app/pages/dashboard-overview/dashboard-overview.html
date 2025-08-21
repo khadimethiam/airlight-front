@@ -1,0 +1,114 @@
+<div class="container-fluid">
+  <h1 class="display-5 fw-bold text-dark">Vue d'ensemble</h1>
+  <p class="text-muted">Statut en temps réel du système AirLight.</p>
+  <hr class="my-4">
+
+  <!-- Affichage pendant le chargement -->
+
+  <!-- Affichage en cas d'erreur -->
+  <div *ngIf="errorMessage" class="alert alert-danger">
+    <strong>Erreur :</strong> {{ errorMessage }}
+  </div>
+
+  <!-- Affichage des données quand elles sont prêtes -->
+  <div *ngIf="!isLoading && !errorMessage && dashboardData" class="row g-4">
+    
+    <!-- Widget: Capteurs Actifs -->
+    <div class="col-xl-3 col-md-6">
+      <div class="card stats-card shadow-sm">
+        <div class="card-body">
+          <div>
+            <h5 class="card-title text-muted mb-1">Capteurs Actifs</h5>
+            <h2 class="fw-bold mb-0">{{ dashboardData.overview.active_sensors }}</h2>
+          </div>
+          <div class="icon-wrapper bg-primary">
+            <i class="fas fa-broadcast-tower"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Widget: Alertes 24h -->
+    <div class="col-xl-3 col-md-6">
+      <div class="card stats-card shadow-sm">
+        <div class="card-body">
+          <div>
+            <h5 class="card-title text-muted mb-1">Alertes (24h)</h5>
+            <h2 class="fw-bold mb-0">{{ dashboardData.overview.alerts_24h }}</h2>
+          </div>
+          <div class="icon-wrapper bg-danger">
+            <i class="fas fa-exclamation-triangle"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Widget: Utilisateurs -->
+    <div class="col-xl-3 col-md-6">
+      <div class="card stats-card shadow-sm">
+        <div class="card-body">
+          <div>
+            <h5 class="card-title text-muted mb-1">Utilisateurs</h5>
+            <h2 class="fw-bold mb-0">{{ dashboardData.overview.users }}</h2>
+          </div>
+          <div class="icon-wrapper bg-success">
+            <i class="fas fa-users"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Widget: Données 24h -->
+    <div class="col-xl-3 col-md-6">
+      <div class="card stats-card shadow-sm">
+        <div class="card-body">
+          <div>
+            <h5 class="card-title text-muted mb-1">Données (24h)</h5>
+            <h2 class="fw-bold mb-0">{{ dashboardData.overview.sensor_data_24h }}</h2>
+          </div>
+          <div class="icon-wrapper bg-info">
+            <i class="fas fa-chart-bar"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Zone pour les graphiques et tableaux -->
+    <div class="col-lg-8 mt-4">
+      <div class="card h-100">
+        <div class="card-body">
+          <h5 class="card-title">Tendance Globale (Graphique à venir)</h5>
+          <div class="alert alert-secondary mt-3">
+            Le graphique de l'évolution de la qualité de l'air sera implémenté ici.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Zone pour les alertes récentes -->
+    <div class="col-lg-4 mt-4">
+      <div class="card h-100">
+        <div class="card-body">
+          <h5 class="card-title">Alertes Récentes</h5>
+          <ul *ngIf="dashboardData.alerts.recent.length > 0" class="list-group list-group-flush">
+            <li *ngFor="let alert of dashboardData.alerts.recent" class="list-group-item d-flex justify-content-between align-items-center">
+              <div>
+                <small class="d-block text-muted">{{ alert.sensorId }}</small>
+                <strong>{{ alert.message }}</strong>
+              </div>
+              <span class="badge rounded-pill" [ngClass]="{
+                'bg-danger': alert.severity === 'hazardous' || alert.severity === 'unhealthy',
+                'bg-warning text-dark': alert.severity === 'poor',
+                'bg-info text-dark': alert.severity === 'moderate'
+              }">{{ alert.severity }}</span>
+            </li>
+          </ul>
+          <div *ngIf="dashboardData.alerts.recent.length === 0" class="alert alert-success mt-3">
+            Aucune alerte récente.
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>

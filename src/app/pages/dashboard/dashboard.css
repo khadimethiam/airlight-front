@@ -1,0 +1,21 @@
+.dashboard-layout {
+  display: flex;
+  min-height: 100vh;
+  background-color: #f4f7fa; /* Un fond gris clair pour la zone de contenu */
+}
+
+.dashboard-main-content {
+  flex-grow: 1; /* Prend tout l'espace restant */
+  padding: 2rem;
+  overflow-y: auto; /* Ajoute une barre de défilement si le contenu est trop long */
+}
+
+/* Pour les petits écrans, on pourrait ajuster la mise en page */
+@media (max-width: 768px) {
+  .dashboard-layout {
+    flex-direction: column;
+  }
+  .dashboard-main-content {
+    padding: 1rem;
+  }
+}
