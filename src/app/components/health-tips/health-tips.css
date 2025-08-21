@@ -1,0 +1,32 @@
+.health-tips-container {
+  background-color: #f8f9fa; /* bg-light de Bootstrap */
+  background-image: linear-gradient(135deg, #e9f7ff 0%, #f0fff0 100%);
+}
+
+.icon-wrapper {
+  width: 80px;
+  height: 80px;
+  background-color: rgba(13, 110, 253, 0.1); /* Bleu primaire avec transparence */
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Ajustement de la couleur des contrôles du carrousel pour une meilleure visibilité */
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+  filter: invert(1) grayscale(100) brightness(0.5);
+}
+
+/* Ajustement de la couleur des indicateurs */
+.carousel-indicators [data-bs-target] {
+  background-color: #0d6efd; /* Bleu primaire */
+}
+
+/* Hauteur minimale pour éviter que le contenu ne saute lors du changement de diapositive */
+.carousel-inner {
+  min-height: 280px;
+  display: flex;
+  align-items: center;
+}

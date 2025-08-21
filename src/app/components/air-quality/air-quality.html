@@ -1,0 +1,38 @@
+<section id="airQuality" class="py-5 bg-white">
+  <div class="container">
+    <!-- Titre de la section -->
+    <h2 class="text-center fw-bold text-dark mb-5">
+      <i class="fas fa-chart-area text-success me-3"></i>
+      Prévisions Qualité de l'Air - 72h
+    </h2>
+
+    <div class="row justify-content-center">
+      <div class="col-lg-10">
+        <div class="card shadow-lg border-0">
+          <div class="card-body p-4 p-lg-5">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h3 class="h5 card-title mb-0">Indice de Qualité de l'Air (IQA)</h3>
+              <!-- Indicateur de chargement -->
+              <div *ngIf="isLoading" class="spinner-border spinner-border-sm text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+              </div>
+            </div>
+            
+            <!-- Conteneur pour le graphique -->
+            <div class="chart-container">
+              <canvas #airQualityChart>Votre navigateur ne supporte pas les canvas.</canvas>
+            </div>
+
+            <!-- Légende personnalisée -->
+            <div class="row g-3 mt-4 text-center text-md-start">
+              <div class="col-6 col-md-auto"><span class="legend-dot bg-success"></span> Bon (0-50)</div>
+              <div class="col-6 col-md-auto"><span class="legend-dot bg-warning"></span> Modéré (51-100)</div>
+              <div class="col-6 col-md-auto"><span class="legend-dot bg-orange"></span> Sensible (101-150)</div>
+              <div class="col-6 col-md-auto"><span class="legend-dot bg-danger"></span> Mauvais (151+)</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

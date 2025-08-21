@@ -1,0 +1,31 @@
+.weather-main-card {
+  background: linear-gradient(135deg, #0d6efd, #0dcaf0); /* Dégradé Bootstrap */
+  border: none;
+}
+
+.card-hover {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  height: 100%; /* ✅ Important pour l’alignement vertical */
+}
+
+.card-hover:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.15) !important;
+}
+/* Flex fill */
+.flex-column .d-flex .flex-fill{
+ border-width:2px !important;
+ transform:translatex(0px) translatey(0px);
+ border-top-left-radius:14px;
+ border-top-right-radius:14px;
+ border-bottom-left-radius:14px;
+ border-bottom-right-radius:14px;
+}
+
+/* Weather main card */
+.align-items-stretch .d-flex .weather-main-card{
+ border-top-left-radius:15px;
+ border-top-right-radius:15px;
+ border-bottom-left-radius:15px;
+ border-bottom-right-radius:15px;
+}

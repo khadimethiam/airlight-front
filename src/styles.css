@@ -1,1 +1,54 @@
 /* You can add global styles to this file, and also import other style files */
+/* src/styles.css */
+
+* {
+    font-family: 'Inter', sans-serif;
+}
+
+.gradient-bg {
+    background: linear-gradient(135deg, #87CEEB 0%, #98FB98 50%, #F0F8FF 100% );
+    animation: gradientShift 8s ease-in-out infinite;
+}
+
+@keyframes gradientShift {
+    0%, 100% { background: linear-gradient(135deg, #87CEEB 0%, #98FB98 50%, #F0F8FF 100%); }
+    50% { background: linear-gradient(135deg, #98FB98 0%, #87CEEB 50%, #E6F3FF 100%); }
+}
+
+.card-hover {
+    transition: all 0.3s ease;
+}
+
+.card-hover:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #87CEEB, #4682B4);
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(70, 130, 180, 0.3);
+}
+
+.weather-icon {
+    filter: drop-shadow(0 4px 8px rgba(0,0,0,0.1));
+}
+
+.loading {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #f3f3f3;
+    border-radius: 50%;
+    border-top: 2px solid #87CEEB;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}

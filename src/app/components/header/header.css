@@ -1,0 +1,21 @@
+.logo-icon-wrapper {
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, #0d6efd, #198754); /* Couleurs Bootstrap: primary et success */
+  border-radius: 0.5rem; /* .rounded-2 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.backdrop-blur-sm {
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+}
+
+/* Ajustement pour le menu mobile */
+@media (max-width: 991.98px) {
+  .navbar-nav .nav-item {
+    text-align: center;
+  }
+}

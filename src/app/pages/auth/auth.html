@@ -1,0 +1,105 @@
+<div class="auth-page-wrapper">
+  <!-- Header simple pour cette page -->
+  <header class="auth-header p-4">
+    <div class="container d-flex justify-content-between align-items-center">
+      <a routerLink="/" class="d-flex align-items-center text-white text-decoration-none">
+        <div class="bg-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
+          <i class="fas fa-wind fs-5" style="color: #87CEEB;"></i>
+        </div>
+        <h1 class="fs-4 fw-bold mb-0">AirLight</h1>
+      </a>
+      <a routerLink="/" class="text-white text-decoration-none d-none d-md-block">
+        <i class="fas fa-arrow-left me-2"></i>Retour à l'accueil
+      </a>
+    </div>
+  </header>
+
+  <!-- Contenu principal centré -->
+  <main class="auth-main d-flex align-items-center justify-content-center p-3">
+    <div class="auth-container rounded-4 shadow-lg p-4 p-md-5 w-100" style="max-width: 480px;">
+      <!-- Titre -->
+      <div class="text-center mb-4">
+        <h2 class="h3 fw-bold text-dark">{{ isLoginView ? 'Heureux de vous revoir !' : 'Créez votre compte' }}</h2>
+        <p class="text-muted">Rejoignez AirLight pour un air plus sain</p>
+      </div>
+
+      <!-- Onglets de navigation -->
+      <ul class="nav nav-tabs nav-fill mb-4 p-1 bg-light rounded-3" id="authTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+          <button class="nav-link w-100" [class.active]="isLoginView" (click)="switchTo('login')">Se connecter</button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link w-100" [class.active]="!isLoginView" (click)="switchTo('register')">S'inscrire</button>
+        </li>
+      </ul>
+
+      <!-- Conteneur pour les messages -->
+      <div *ngIf="errorMessage" class="alert alert-danger">{{ errorMessage }}</div>
+      <div *ngIf="successMessage" class="alert alert-success">{{ successMessage }}</div>
+
+      <!-- Contenu des onglets -->
+      <div class="tab-content">
+        <!-- Formulaire de connexion -->
+        <div *ngIf="isLoginView">
+          <form [formGroup]="loginForm" (ngSubmit)="onLogin()">
+            <div class="mb-3">
+              <label for="loginEmail" class="form-label">Email</label>
+              <input type="email" class="form-control p-2" id="loginEmail" placeholder="votre@email.com" formControlName="email">
+            </div>
+            <div class="mb-3">
+              <label for="loginPassword" class="form-label">Mot de passe</label>
+              <input type="password" class="form-control p-2" id="loginPassword" placeholder="••••••••" formControlName="password">
+            </div>
+            <button type="submit" class="btn btn-primary w-100 p-2 fw-bold text-white mt-3" [disabled]="loginForm.invalid">
+              <i class="fas fa-sign-in-alt me-2"></i>Se connecter
+            </button>
+          </form>
+        </div>
+
+        <!-- Formulaire d'inscription -->
+        <div *ngIf="!isLoginView">
+          <form [formGroup]="registerForm" (ngSubmit)="onRegister()">
+            <div class="row g-3 mb-3">
+              <div class="col">
+                <label for="firstName" class="form-label">Prénom</label>
+                <input type="text" class="form-control p-2" id="firstName" placeholder="Jean" formControlName="firstName">
+              </div>
+              <div class="col">
+                <label for="lastName" class="form-label">Nom</label>
+                <input type="text" class="form-control p-2" id="lastName" placeholder="Dupont" formControlName="lastName">
+              </div>
+            </div>
+            <div class="mb-3">
+              <label for="registerEmail" class="form-label">Email</label>
+              <input type="email" class="form-control p-2" id="registerEmail" placeholder="votre@email.com" formControlName="email">
+            </div>
+            <div class="mb-3">
+              <label for="registerPassword" class="form-label">Mot de passe</label>
+              <input type="password" class="form-control p-2" id="registerPassword" placeholder="Minimum 8 caractères" formControlName="password">
+            </div>
+            <div class="mb-3">
+              <label for="confirmPassword" class="form-label">Confirmer le mot de passe</label>
+              <input type="password" class="form-control p-2" id="confirmPassword" placeholder="••••••••" formControlName="confirmPassword">
+            </div>
+            <button type="submit" class="btn btn-primary w-100 p-2 fw-bold text-white mt-3" [disabled]="registerForm.invalid">
+              <i class="fas fa-user-plus me-2"></i>S'inscrire
+            </button>
+          </form>
+        </div>
+
+        <!-- Séparateur "ou" -->
+        <div class="d-flex align-items-center my-4">
+          <hr class="flex-grow-1">
+          <span class="mx-3 text-muted">ou</span>
+          <hr class="flex-grow-1">
+        </div>
+
+        <!-- Bouton Google -->
+        <button type="button" class="btn btn-google w-100 p-2 fw-bold bg-white" (click)="onGoogleAuth()">
+          <img src="https://www.google.com/favicon.ico" alt="Google icon" class="me-2" style="width: 20px; height: 20px;">
+          Continuer avec Google
+        </button>
+      </div>
+    </div>
+  </main>
+</div>

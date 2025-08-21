@@ -1,0 +1,65 @@
+/* Conteneur principal qui prend toute la hauteur et applique le fond */
+.auth-page-wrapper {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #87CEEB 0%, #90EE90 100%);
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header spécifique à la page d'authentification */
+.auth-header {
+  flex-shrink: 0;
+}
+
+/* Main content area */
+.auth-main {
+  flex-grow: 1;
+}
+
+/* Carte d'authentification avec effet de verre dépoli */
+.auth-container {
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Style des onglets */
+.nav-tabs .nav-link {
+  border: none;
+  color: #6c757d; /* text-secondary */
+  background-color: #f8f9fa; /* bg-light */
+  transition: all 0.3s ease;
+  font-weight: 500;
+}
+
+/* Style de l'onglet actif */
+.nav-tabs .nav-link.active {
+  color: white;
+  background: linear-gradient(135deg, #87CEEB, #90EE90);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(135, 206, 235, 0.4);
+}
+
+/* Style pour le bouton Google */
+.btn-google {
+  border-color: #dee2e6; /* border-light */
+  transition: all 0.3s ease;
+}
+
+.btn-google:hover {
+  border-color: #87CEEB;
+  background-color: rgba(135, 206, 235, 0.05);
+}
+
+/* Style pour le bouton de soumission principal */
+.btn-primary {
+  background: linear-gradient(135deg, #87CEEB, #90EE90);
+  border: none;
+  transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(135, 206, 235, 0.3);
+}

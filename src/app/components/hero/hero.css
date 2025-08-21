@@ -1,0 +1,20 @@
+/* Ajoute un padding-top pour que le contenu ne soit pas caché par le header fixe */
+section {
+  padding-top: 120px !important; /* !important pour surcharger Bootstrap si nécessaire */
+}
+
+.hero-highlight {
+  color: #0a2540; /* Une couleur sombre qui contraste bien avec le fond */
+  font-weight: 700; /* fw-bold */
+}
+
+/* Ajustement de la taille de la police pour les petits écrans */
+@media (max-width: 768px) {
+  h1.display-4 {
+    font-size: 2.5rem;
+  }
+  
+  section {
+    padding-top: 100px !important;
+  }
+}

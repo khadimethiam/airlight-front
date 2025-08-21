@@ -1,0 +1,64 @@
+<section id="healthTips" class="py-5 bg-light">
+  <div class="container">
+    <!-- Titre de la section -->
+    <h2 class="text-center fw-bold text-dark mb-5">
+      <i class="fas fa-heartbeat text-danger me-3"></i>
+      Conseils Santé
+    </h2>
+
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+        <!-- Conteneur principal du carrousel avec un fond personnalisé -->
+        <div class="health-tips-container p-5 rounded-3 shadow-lg text-center">
+          
+          <!-- Début du carrousel Bootstrap -->
+          <div id="healthCarousel" class="carousel slide" data-bs-ride="carousel">
+            
+            <!-- Indicateurs du carrousel (les petits points en bas) -->
+            <div class="carousel-indicators">
+              <button 
+                *ngFor="let tip of healthTips; let i = index"
+                type="button" 
+                [attr.data-bs-target]="'#healthCarousel'" 
+                [attr.data-bs-slide-to]="i" 
+                [class.active]="i === 0" 
+                [attr.aria-current]="i === 0 ? 'true' : 'false'"
+                [attr.aria-label]="'Slide ' + (i + 1)">
+              </button>
+            </div>
+
+            <!-- Contenu des diapositives -->
+            <div class="carousel-inner">
+              <div 
+                *ngFor="let tip of healthTips; let i = index"
+                class="carousel-item" 
+                [class.active]="i === 0">
+                
+                <!-- Icône du conseil -->
+                <div class="icon-wrapper mx-auto mb-4">
+                  <i [class]="tip.icon + ' fa-2x text-primary'"></i>
+                </div>
+                <!-- Titre du conseil -->
+                <h3 class="h4 fw-bold text-dark mb-3">{{ tip.title }}</h3>
+                <!-- Contenu du conseil -->
+                <p class="lead text-muted">{{ tip.content }}</p>
+              </div>
+            </div>
+
+            <!-- Contrôles Précédent/Suivant -->
+            <button class="carousel-control-prev" type="button" data-bs-target="#healthCarousel" data-bs-slide="prev">
+              <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+              <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#healthCarousel" data-bs-slide="next">
+              <span class="carousel-control-next-icon" aria-hidden="true"></span>
+              <span class="visually-hidden">Next</span>
+            </button>
+          </div>
+          <!-- Fin du carrousel Bootstrap -->
+
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,18 @@
+.chart-container {
+  position: relative;
+  height: 400px;
+}
+
+.legend-dot {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  margin-right: 8px;
+  vertical-align: middle;
+}
+
+/* Bootstrap n'a pas de classe .bg-orange par défaut, nous la créons */
+.bg-orange {
+  background-color: #fd7e14;
+}
