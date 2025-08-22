@@ -31,7 +31,7 @@
               <li><a class="dropdown-item" routerLink="/dashboard"><i class="fas fa-tachometer-alt fa-fw me-2"></i>Dashboard</a></li>
               <li><hr class="dropdown-divider"></li>
               <!-- Nous ajouterons la méthode de déconnexion ici plus tard -->
-              <li><a class="dropdown-item" href="#"><i class="fas fa-sign-out-alt fa-fw me-2"></i>Déconnexion</a></li>
+              <li><a (click)="logout()"class="dropdown-item" href="#"><i class="fas fa-sign-out-alt fa-fw me-2"></i>Déconnexion</a></li>
             </ul>
           </li>
         </ng-container>

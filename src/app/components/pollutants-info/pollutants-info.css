@@ -1,0 +1,49 @@
+/* src/app/components/pollutants-info/pollutants-info.css */
+
+.pollutant-card {
+  background-color: #f8f9fa; /* Fond gris très clair */
+  border: 1px solid #dee2e6;
+  border-radius: 1rem;
+  padding: 2rem;
+  text-align: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.pollutant-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.1);
+}
+
+.pollutant-icon {
+  width: 70px;
+  height: 70px;
+  margin: 0 auto;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.75rem;
+  color: #fff;
+}
+
+/* Couleurs spécifiques pour chaque icône */
+.pollutant-icon.icon-pm25 {
+  background-color: #dc3545; /* Rouge danger */
+}
+
+.pollutant-icon.icon-pm10 {
+  background-color: #fd7e14; /* Orange */
+}
+
+.pollutant-icon.icon-co2 {
+  background-color: #6c757d; /* Gris */
+}
+
+.pollutant-card ul {
+  text-align: left;
+  font-size: 0.9rem;
+}
+
+.pollutant-card ul li {
+  margin-bottom: 0.5rem;
+}

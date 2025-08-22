@@ -1,0 +1,88 @@
+<div class="container-fluid">
+  <h1 class="display-5 fw-bold text-dark">Prédictions IA</h1>
+  <p class="text-muted">Analyse prédictive de la qualité de l'air pour anticiper les pics de pollution.</p>
+  <hr class="my-4">
+
+  <!-- Filtres et stats du modèle -->
+  <div class="row g-4 mb-4">
+    <div class="col-lg-6">
+      <div class="card shadow-sm h-100">
+        <div class="card-body">
+          <label for="sensorSelector" class="form-label fw-bold">Sélectionner un capteur</label>
+          <select id="sensorSelector" class="form-select" [(ngModel)]="selectedSensorId" (ngModelChange)="onSensorChange()" [disabled]="isLoading">
+            <option *ngIf="sensors.length === 0" value="">Aucun capteur avec prédictions</option>
+            <option *ngFor="let sensor of sensors" [value]="sensor.id">{{ sensor.name }}</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-3 col-6">
+      <div class="card shadow-sm h-100">
+        <div class="card-body text-center">
+          <h6 class="text-muted">Précision du Modèle</h6>
+          <div *ngIf="!isLoading && modelAccuracy" class="display-6 fw-bold text-success">{{ (modelAccuracy.accuracy * 100).toFixed(1) }}%</div>
+          <div *ngIf="isLoading" class="spinner-border spinner-border-sm"></div>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-3 col-6">
+      <div class="card shadow-sm h-100">
+        <div class="card-body text-center">
+          <h6 class="text-muted">Dernier Réentraînement</h6>
+          <div *ngIf="!isLoading" class="h5 fw-bold">Il y a 2 jours</div>
+          <div *ngIf="isLoading" class="spinner-border spinner-border-sm"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Graphique de prédiction -->
+  <div class="card shadow-sm mb-4">
+    <div class="card-body">
+      <h5 class="card-title">Prédictions vs Données Historiques (PM2.5)</h5>
+      <div *ngIf="isLoading" class="text-center py-5"><div class="spinner-border text-primary"></div></div>
+      <div *ngIf="!isLoading" style="height: 400px;">
+        <canvas #predictionChart></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tableau des prédictions futures -->
+  <div class="card shadow-sm">
+    <div class="card-body">
+      <h5 class="card-title">Prédictions Futures Détaillées</h5>
+      <div *ngIf="isLoading" class="text-center py-4"><div class="spinner-border"></div></div>
+      <div *ngIf="!isLoading" class="table-responsive">
+        <table class="table table-hover align-middle">
+          <thead>
+            <tr>
+              <th>Heure Prédite</th>
+              <th>PM2.5 Prédit (µg/m³)</th>
+              <th>AQI Prédit</th>
+              <th>Confiance</th>
+              <th>Version Modèle</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let pred of futurePredictions">
+              <td>{{ pred.predictionFor | date:'dd/MM HH:mm' }}</td>
+              <td class="fw-bold">{{ pred.predictedPM25.toFixed(1) }}</td>
+              <td>{{ pred.predictedAQI.toFixed(0) }}</td>
+              <td>
+                <div class="progress" style="height: 20px;">
+                  <div class="progress-bar" role="progressbar" [style.width]="(pred.confidence * 100) + '%'" [ngClass]="{'bg-success': pred.confidence > 0.8, 'bg-warning': pred.confidence <= 0.8 && pred.confidence > 0.6, 'bg-danger': pred.confidence <= 0.6}">
+                    {{ (pred.confidence * 100).toFixed(0) }}%
+                  </div>
+                </div>
+              </td>
+              <td><span class="badge bg-secondary">{{ pred.modelVersion }}</span></td>
+            </tr>
+            <tr *ngIf="futurePredictions.length === 0">
+              <td colspan="5" class="text-center text-muted py-4">Aucune prédiction future disponible pour ce capteur.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

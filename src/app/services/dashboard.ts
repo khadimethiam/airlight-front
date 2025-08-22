@@ -28,13 +28,18 @@ export interface DashboardData {
   providedIn: 'root'
 } )
 export class DashboardService {
-  // L'URL de votre API d'administration
   private adminApiUrl = 'http://localhost:3000/admin';
+  private sensorsApiUrl = 'http://localhost:3000/sensors'; // <-- Ajoutez l'URL des capteurs
 
   constructor(private http: HttpClient ) { }
 
-  // Méthode pour récupérer les données de la vue d'ensemble
   getOverviewData(): Observable<DashboardData> {
     return this.http.get<DashboardData>(`${this.adminApiUrl}/dashboard` );
+  }
+
+  // --- AJOUTEZ CETTE MÉTHODE ---
+  // Récupère les stats globales des capteurs, y compris l'évolution temporelle
+  getGlobalSensorStats(period: string = '24h'): Observable<any> {
+    return this.http.get<any>(`${this.sensorsApiUrl}/stats/global?period=${period}` );
   }
 }

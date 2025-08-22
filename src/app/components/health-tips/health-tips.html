@@ -8,39 +8,43 @@
 
     <div class="row justify-content-center">
       <div class="col-lg-8">
-        <!-- Conteneur principal du carrousel avec un fond personnalisé -->
+        <!-- Conteneur principal du carrousel -->
         <div class="health-tips-container p-5 rounded-3 shadow-lg text-center">
           
-          <!-- Début du carrousel Bootstrap -->
-          <div id="healthCarousel" class="carousel slide" data-bs-ride="carousel">
+          <!-- Indicateur de chargement -->
+          <div *ngIf="isLoading" class="text-center">
+            <div class="spinner-border text-primary" role="status"></div>
+            <p class="mt-2">Chargement des conseils...</p>
+          </div>
+
+          <!-- Carrousel Bootstrap (affiché seulement après chargement) -->
+          <div *ngIf="!isLoading" id="healthCarousel" class="carousel slide" data-bs-ride="carousel">
             
-            <!-- Indicateurs du carrousel (les petits points en bas) -->
+            <!-- Indicateurs du carrousel -->
             <div class="carousel-indicators">
               <button 
-                *ngFor="let tip of healthTips; let i = index"
+                *ngFor="let tip of displayedHealthTips; let i = index"
                 type="button" 
-                [attr.data-bs-target]="'#healthCarousel'" 
+                data-bs-target="#healthCarousel" 
                 [attr.data-bs-slide-to]="i" 
                 [class.active]="i === 0" 
                 [attr.aria-current]="i === 0 ? 'true' : 'false'"
-                [attr.aria-label]="'Slide ' + (i + 1)">
+                [attr.aria-label]="'Conseil ' + (i + 1)">
               </button>
             </div>
 
             <!-- Contenu des diapositives -->
             <div class="carousel-inner">
+              <!-- La boucle se fait sur 'displayedHealthTips' -->
               <div 
-                *ngFor="let tip of healthTips; let i = index"
+                *ngFor="let tip of displayedHealthTips; let i = index"
                 class="carousel-item" 
                 [class.active]="i === 0">
                 
-                <!-- Icône du conseil -->
                 <div class="icon-wrapper mx-auto mb-4">
                   <i [class]="tip.icon + ' fa-2x text-primary'"></i>
                 </div>
-                <!-- Titre du conseil -->
                 <h3 class="h4 fw-bold text-dark mb-3">{{ tip.title }}</h3>
-                <!-- Contenu du conseil -->
                 <p class="lead text-muted">{{ tip.content }}</p>
               </div>
             </div>
@@ -48,11 +52,11 @@
             <!-- Contrôles Précédent/Suivant -->
             <button class="carousel-control-prev" type="button" data-bs-target="#healthCarousel" data-bs-slide="prev">
               <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-              <span class="visually-hidden">Previous</span>
+              <span class="visually-hidden">Précédent</span>
             </button>
             <button class="carousel-control-next" type="button" data-bs-target="#healthCarousel" data-bs-slide="next">
               <span class="carousel-control-next-icon" aria-hidden="true"></span>
-              <span class="visually-hidden">Next</span>
+              <span class="visually-hidden">Suivant</span>
             </button>
           </div>
           <!-- Fin du carrousel Bootstrap -->

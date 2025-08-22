@@ -1,0 +1,77 @@
+<div class="container-fluid">
+  <h1 class="display-5 fw-bold text-dark">Analyse des Capteurs</h1>
+  <p class="text-muted">Données détaillées et historiques par capteur.</p>
+  <hr class="my-4">
+
+  <!-- Sélecteur de capteur -->
+  <div class="card shadow-sm mb-4">
+    <div class="card-body">
+      <label for="sensorSelector" class="form-label fw-bold">Sélectionner un capteur</label>
+      <select id="sensorSelector" class="form-select" [(ngModel)]="selectedSensorId" (ngModelChange)="onSensorChange()" [disabled]="isLoadingSensors">
+        <option *ngIf="isLoadingSensors" value="">Chargement des capteurs...</option>
+        <option *ngFor="let sensor of sensors" [value]="sensor.id">{{ sensor.name }} ({{ sensor.city }})</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Conteneur pour les données -->
+  <div *ngIf="selectedSensorId">
+    <!-- Indicateur de chargement des données -->
+    <div *ngIf="isLoadingData" class="text-center py-5">
+      <div class="spinner-border text-primary" role="status"></div>
+      <p class="mt-2">Chargement des données pour {{ selectedSensorId }}...</p>
+    </div>
+
+    <!-- Affichage des données -->
+    <div *ngIf="!isLoadingData && latestData">
+      <!-- Jauges de données en temps réel -->
+      <div class="row g-4 mb-4">
+        <div class="col-lg-3 col-md-6">
+          <app-gauge 
+            label="PM2.5" 
+            [value]="latestData.measurements.pm25" 
+            unit="µg/m³"
+            [max]="75"
+            [status]="getPmStatus(latestData.measurements.pm25)">
+          </app-gauge>
+        </div>
+
+        <div class="col-lg-3 col-md-6">
+      <app-gauge 
+        label="PM10" 
+        [value]="latestData.measurements.pm10" 
+        unit="µg/m³"
+        [max]="150"
+        [status]="getPmStatus(latestData.measurements.pm10)">
+      </app-gauge>
+    </div>
+
+    <div class="col-lg-3 col-md-6">
+      <app-gauge 
+        label="CO2" 
+        [value]="latestData.measurements.co2" 
+        unit="ppm"
+        [max]="2000"
+        [status]="latestData.measurements.co2 < 1000 ? 'Bon' : 'Élevé'">
+      </app-gauge>
+    </div>
+    <div class="col-lg-3 col-md-6">
+      <app-gauge 
+        label="Température" 
+        [value]="latestData.measurements.temperature" 
+        unit="°C"
+        [max]="40"
+        status="Optimal">
+      </app-gauge>
+    </div>
+
+        <!-- Ajoutez d'autres jauges pour PM10, CO2, etc. sur le même modèle -->
+      </div>
+
+      <!-- Graphique et tableau (à venir) -->
+      <div class="alert alert-info">
+        Le graphique historique et le tableau des données seront implémentés ici.
+      </div>
+    </div>
+  </div>
+</div>

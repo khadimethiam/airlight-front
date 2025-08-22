@@ -1,0 +1,14 @@
+<div class="gauge-card">
+  <h4 class="gauge-label">{{ label }}</h4>
+  <div class="gauge-container">
+    <!-- Le style de la jauge sera géré dynamiquement par le CSS -->
+    <div class="gauge-background"></div>
+    <div class="gauge-progress" [style.transform]="'rotate(' + (value / max * 180) + 'deg)'"></div>
+    <div class="gauge-mask"></div>
+    <div class="gauge-inner-circle">
+      <span class="gauge-value">{{ value.toFixed(0) }}</span>
+      <span class="gauge-unit">{{ unit }}</span>
+    </div>
+  </div>
+  <span class="gauge-status" [ngClass]="statusClass">{{ status }}</span>
+</div>

@@ -33,4 +33,7 @@ export class Header implements OnInit { // <-- Implémentez OnInit
       element.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   }
+  logout(): void {
+    this.authService.logout();
+  }
 }

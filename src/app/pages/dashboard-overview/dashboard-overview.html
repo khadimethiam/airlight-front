@@ -1,114 +1,146 @@
+<!-- src/app/pages/dashboard-overview/dashboard-overview.html -->
+
 <div class="container-fluid">
-  <h1 class="display-5 fw-bold text-dark">Vue d'ensemble</h1>
-  <p class="text-muted">Statut en temps réel du système AirLight.</p>
-  <hr class="my-4">
+  <!-- En-tête de la page -->
+  <div class="mb-4">
+    <h1 class="display-5 fw-bold text-dark">Dashboard Principal</h1>
+    <p class="text-muted">Vue d'ensemble de la qualité de l'air et de l'état du système.</p>
+  </div>
 
-  <!-- Affichage pendant le chargement -->
+  <!-- Indicateur de chargement global -->
+  <div *ngIf="isLoading" class="text-center py-5">
+    <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+    <p class="mt-3">Chargement des données du tableau de bord...</p>
+  </div>
 
-  <!-- Affichage en cas d'erreur -->
-  <div *ngIf="errorMessage" class="alert alert-danger">
+  <!-- Message d'erreur global -->
+  <div *ngIf="errorMessage && !isLoading" class="alert alert-danger">
     <strong>Erreur :</strong> {{ errorMessage }}
   </div>
 
-  <!-- Affichage des données quand elles sont prêtes -->
+  <!-- Conteneur principal des données (affiché seulement si tout est chargé sans erreur) -->
   <div *ngIf="!isLoading && !errorMessage && dashboardData" class="row g-4">
     
+    <!-- Widget: État Global -->
+    <div class="col-xl-3 col-md-6">
+      <div class="stats-card">
+        <div class="stats-card-content">
+          <div class="stats-card-info">
+            <p class="label">État Global</p>
+            <p class="value status-good">Bon</p> <!-- Note: Ce widget est statique pour l'instant -->
+          </div>
+          <i class="fas fa-leaf stats-card-icon status-good"></i>
+        </div>
+      </div>
+    </div>
+
     <!-- Widget: Capteurs Actifs -->
     <div class="col-xl-3 col-md-6">
-      <div class="card stats-card shadow-sm">
-        <div class="card-body">
-          <div>
-            <h5 class="card-title text-muted mb-1">Capteurs Actifs</h5>
-            <h2 class="fw-bold mb-0">{{ dashboardData.overview.active_sensors }}</h2>
+      <div class="stats-card">
+        <div class="stats-card-content">
+          <div class="stats-card-info">
+            <p class="label">Capteurs Actifs</p>
+            <p class="value status-sensors">{{ dashboardData.overview.active_sensors }}</p>
           </div>
-          <div class="icon-wrapper bg-primary">
-            <i class="fas fa-broadcast-tower"></i>
-          </div>
+          <i class="fas fa-microchip stats-card-icon status-sensors"></i>
         </div>
       </div>
     </div>
 
-    <!-- Widget: Alertes 24h -->
+    <!-- Widget: Alertes (24h) -->
     <div class="col-xl-3 col-md-6">
-      <div class="card stats-card shadow-sm">
-        <div class="card-body">
-          <div>
-            <h5 class="card-title text-muted mb-1">Alertes (24h)</h5>
-            <h2 class="fw-bold mb-0">{{ dashboardData.overview.alerts_24h }}</h2>
+      <div class="stats-card">
+        <div class="stats-card-content">
+          <div class="stats-card-info">
+            <p class="label">Alertes (24h)</p>
+            <p class="value status-alerts">{{ dashboardData.overview.alerts_24h }}</p>
           </div>
-          <div class="icon-wrapper bg-danger">
-            <i class="fas fa-exclamation-triangle"></i>
-          </div>
+          <!-- L'animation 'pulse' ne s'active que s'il y a des alertes -->
+          <i class="fas fa-exclamation-triangle stats-card-icon status-alerts" [class.alert-badge]="dashboardData.overview.alerts_24h > 0"></i>
         </div>
       </div>
     </div>
 
-    <!-- Widget: Utilisateurs -->
+    <!-- Widget: Prédiction -->
     <div class="col-xl-3 col-md-6">
-      <div class="card stats-card shadow-sm">
-        <div class="card-body">
-          <div>
-            <h5 class="card-title text-muted mb-1">Utilisateurs</h5>
-            <h2 class="fw-bold mb-0">{{ dashboardData.overview.users }}</h2>
+      <div class="stats-card">
+        <div class="stats-card-content">
+          <div class="stats-card-info">
+            <p class="label">Prédiction</p>
+            <p class="value fs-5 status-prediction">Amélioration</p> <!-- Note: Ce widget est statique pour l'instant -->
           </div>
-          <div class="icon-wrapper bg-success">
-            <i class="fas fa-users"></i>
+          <i class="fas fa-brain stats-card-icon status-prediction"></i>
+        </div>
+      </div>
+    </div>
+
+    <!-- Carte des Capteurs et Graphique de Tendance -->
+    <div class="col-lg-7 mt-4">
+      <div class="card h-100 shadow-sm">
+        <div class="card-body d-flex flex-column">
+          <h5 class="card-title mb-3">Tendance Globale AQI (24h)</h5>
+          <div class="flex-grow-1" style="position: relative; min-height: 350px;">
+            <canvas #trendChart></canvas>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Widget: Données 24h -->
-    <div class="col-xl-3 col-md-6">
-      <div class="card stats-card shadow-sm">
-        <div class="card-body">
-          <div>
-            <h5 class="card-title text-muted mb-1">Données (24h)</h5>
-            <h2 class="fw-bold mb-0">{{ dashboardData.overview.sensor_data_24h }}</h2>
-          </div>
-          <div class="icon-wrapper bg-info">
-            <i class="fas fa-chart-bar"></i>
-          </div>
+    <div class="col-lg-5 mt-4">
+      <div class="card h-100 shadow-sm">
+        <div class="card-body d-flex flex-column">
+          <h5 class="card-title mb-3">Carte des Capteurs</h5>
+          <div #map class="map-container"></div>
         </div>
       </div>
     </div>
 
-    <!-- Zone pour les graphiques et tableaux -->
-    <div class="col-lg-8 mt-4">
-      <div class="card h-100">
-        <div class="card-body">
-          <h5 class="card-title">Tendance Globale (Graphique à venir)</h5>
-          <div class="alert alert-secondary mt-3">
-            Le graphique de l'évolution de la qualité de l'air sera implémenté ici.
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Zone pour les alertes récentes -->
-    <div class="col-lg-4 mt-4">
-      <div class="card h-100">
+    <!-- **SECTION DU TABLEAU DES ALERTES RÉCENTES** -->
+    <div class="col-12 mt-4">
+      <div class="card shadow-sm">
         <div class="card-body">
           <h5 class="card-title">Alertes Récentes</h5>
-          <ul *ngIf="dashboardData.alerts.recent.length > 0" class="list-group list-group-flush">
-            <li *ngFor="let alert of dashboardData.alerts.recent" class="list-group-item d-flex justify-content-between align-items-center">
-              <div>
-                <small class="d-block text-muted">{{ alert.sensorId }}</small>
-                <strong>{{ alert.message }}</strong>
-              </div>
-              <span class="badge rounded-pill" [ngClass]="{
-                'bg-danger': alert.severity === 'hazardous' || alert.severity === 'unhealthy',
-                'bg-warning text-dark': alert.severity === 'poor',
-                'bg-info text-dark': alert.severity === 'moderate'
-              }">{{ alert.severity }}</span>
-            </li>
-          </ul>
-          <div *ngIf="dashboardData.alerts.recent.length === 0" class="alert alert-success mt-3">
-            Aucune alerte récente.
+          <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+              <thead>
+                <tr>
+                  <th scope="col">Sévérité</th>
+                  <th scope="col">Capteur</th>
+                  <th scope="col">Message</th>
+                  <th scope="col">Date</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Boucle sur les alertes récentes récupérées de l'API -->
+                <tr *ngFor="let alert of dashboardData.alerts.recent">
+                  <td>
+                    <!-- Badge de sévérité avec couleur dynamique -->
+                    <span class="badge fs-6" [ngClass]="{
+                      'bg-danger text-white': alert.severity === 'hazardous' || alert.severity === 'unhealthy',
+                      'bg-warning text-dark': alert.severity === 'poor',
+                      'bg-info text-dark': alert.severity === 'moderate',
+                      'bg-success text-white': alert.severity === 'good'
+                    }">{{ alert.severity }}</span>
+                  </td>
+                  <td class="text-muted">{{ alert.sensorId }}</td>
+                  <td>{{ alert.message }}</td>
+                  <td>{{ alert.createdAt | date:'dd/MM/yy HH:mm' }}</td>
+                </tr>
+                <!-- Message si aucune alerte récente n'est trouvée -->
+                <tr *ngIf="dashboardData.alerts.recent.length === 0">
+                  <td colspan="4" class="text-center text-muted py-4">
+                    <i class="fas fa-check-circle text-success fs-4 mb-2"></i>
+                    <p class="mb-0">Aucune alerte récente à signaler.</p>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
     </div>
-
+    
   </div>
 </div>

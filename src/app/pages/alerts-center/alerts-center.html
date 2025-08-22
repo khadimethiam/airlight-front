@@ -1,0 +1,102 @@
+<div class="container-fluid">
+  <h1 class="display-5 fw-bold text-dark">Centre d'Alertes</h1>
+  <p class="text-muted">Gestion et analyse des alertes du système.</p>
+  <hr class="my-4">
+
+  <!-- Filtres -->
+  <div class="card shadow-sm mb-4">
+    <div class="card-body">
+      <div class="row g-3 align-items-end">
+        <div class="col-md-3">
+          <label for="severityFilter" class="form-label">Sévérité</label>
+          <select id="severityFilter" class="form-select" [(ngModel)]="filters.severity">
+            <option value="">Toutes</option>
+            <option value="hazardous">Dangereux</option>
+            <option value="unhealthy">Malsain</option>
+            <option value="poor">Mauvais</option>
+            <option value="moderate">Modéré</option>
+          </select>
+        </div>
+        <div class="col-md-4">
+          <label for="sensorFilter" class="form-label">Capteur</label>
+          <select id="sensorFilter" class="form-select" [(ngModel)]="filters.sensorId">
+            <option value="">Tous</option>
+            <option *ngFor="let sensor of sensors" [value]="sensor.id">{{ sensor.name }}</option>
+          </select>
+        </div>
+        <div class="col-md-3">
+          <label for="statusFilter" class="form-label">État</label>
+          <select id="statusFilter" class="form-select" [(ngModel)]="filters.isActive">
+            <option value="true">Actives</option>
+            <option value="false">Inactives</option>
+            <option value="">Toutes</option>
+          </select>
+        </div>
+        <div class="col-md-2">
+          <button class="btn btn-primary w-100" (click)="applyFilters()">Filtrer</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Graphiques d'analyse -->
+  <div class="row g-4 mb-4">
+    <div class="col-lg-6">
+      <div class="card shadow-sm h-100">
+        <div class="card-body">
+          <h5 class="card-title">Répartition par Sévérité (7j)</h5>
+          <div style="height: 300px;">
+            <canvas #severityChart></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-6">
+      <div class="card shadow-sm h-100">
+        <div class="card-body">
+          <h5 class="card-title">Capteurs les Plus Problématiques (à venir)</h5>
+          <div class="alert alert-secondary mt-3">Le graphique des capteurs sera implémenté ici.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tableau des alertes -->
+  <div class="card shadow-sm">
+    <div class="card-body">
+      <h5 class="card-title">Liste des Alertes</h5>
+      <div *ngIf="isLoading" class="text-center py-4"><div class="spinner-border"></div></div>
+      <div *ngIf="!isLoading" class="table-responsive">
+        <table class="table table-hover align-middle">
+          <thead>
+            <tr>
+              <th>Sévérité</th>
+              <th>Capteur</th>
+              <th>Message</th>
+              <th>Date</th>
+              <th>État</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let alert of alerts">
+              <td><span class="badge fs-6" [ngClass]="getSeverityClass(alert.severity)">{{ alert.severity }}</span></td>
+              <td>{{ alert.sensorId }}</td>
+              <td>{{ alert.message }}</td>
+              <td>{{ alert.createdAt | date:'dd/MM/yy HH:mm' }}</td>
+              <td><span class="badge" [ngClass]="alert.isActive ? 'bg-success-subtle text-success-emphasis' : 'bg-secondary-subtle'">{{ alert.isActive ? 'Active' : 'Inactive' }}</span></td>
+              <td>
+                <button *ngIf="alert.isActive" class="btn btn-sm btn-outline-secondary" (click)="acknowledge(alert._id)" title="Acquitter">
+                  <i class="fas fa-check"></i>
+                </button>
+              </td>
+            </tr>
+            <tr *ngIf="alerts.length === 0">
+              <td colspan="6" class="text-center text-muted py-4">Aucune alerte ne correspond à vos filtres.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

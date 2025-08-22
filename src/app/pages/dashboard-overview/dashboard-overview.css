@@ -1,27 +1,75 @@
+/* src/app/pages/dashboard-overview/dashboard-overview.css */
+
 .stats-card {
-  border: none;
-  border-radius: 0.75rem;
+  background-color: #ffffff;
+  border-radius: 1rem; /* Bords plus arrondis */
+  padding: 1.5rem;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border: 1px solid #e5e7eb;
 }
 
 .stats-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
 }
 
-.stats-card .card-body {
+.stats-card-content {
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 
-.stats-card .icon-wrapper {
-  width: 50px;
-  height: 50px;
+.stats-card-info .label {
+  color: #6b7280; /* Gris */
+  font-size: 0.875rem;
+  margin-bottom: 0.25rem;
+}
+
+.stats-card-info .value {
+  font-size: 1.875rem; /* 30px */
+  font-weight: 700;
+  color: #1f2937; /* Texte sombre */
+}
+
+.stats-card-icon {
+  font-size: 2rem; /* Icône plus grande */
+  opacity: 0.8;
+}
+
+/* Couleurs spécifiques pour les icônes et les valeurs */
+.status-good { color: #10b981; }
+.status-sensors { color: #3b82f6; }
+.status-alerts { color: #f59e0b; }
+.status-prediction { color: #8b5cf6; }
+
+.alert-badge {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.7; transform: scale(1.1); }
+}
+
+.map-container {
+  height: 100%;
+  min-height: 350px; /* Hauteur minimale pour la carte */
+  border-radius: 0.75rem;
+}
+/* Styles pour les marqueurs de carte personnalisés */
+.custom-map-icon {
+  background-color: white;
   border-radius: 50%;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.5rem;
-  color: #fff;
+  font-weight: bold;
+  font-size: 12px;
+  border: 2px solid white;
 }
+
+.custom-map-icon.icon-green { border-color: #10b981; color: #10b981; }
+.custom-map-icon.icon-orange { border-color: #f59e0b; color: #f59e0b; }
+.custom-map-icon.icon-red { border-color: #ef4444; color: #ef4444; }

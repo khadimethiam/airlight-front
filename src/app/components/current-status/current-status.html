@@ -1,0 +1,83 @@
+<section id="current-status" class="py-5 bg-light">
+  <div class="container">
+    <h2 class="text-center fw-bold mb-5">État Actuel du capteur AirLight</h2>
+
+    <div *ngIf="isLoading" class="text-center">
+      <div class="spinner-border text-primary" role="status"></div>
+      <p class="mt-2">Chargement des données en temps réel...</p>
+    </div>
+
+    <div *ngIf="!isLoading && latestSensorData && weatherData" class="row justify-content-center">
+      <div class="col-lg-10">
+        <div class="status-card shadow">
+          <div class="row g-0">
+            <!-- Section Qualité de l'Air -->
+            <div class="col-md-7 p-4 p-lg-5 border-end-md">
+              <h3 class="fw-bold mb-3">Qualité de l'Air</h3>
+              <div class="d-flex align-items-center mb-4">
+                <div class="aqi-value" [ngClass]="aqiStatus.class">{{ latestSensorData.airQualityIndex }}</div>
+                <div class="ms-4">
+                  <div class="aqi-level" [ngClass]="aqiStatus.class">{{ aqiStatus.level }}</div>
+                  <div class="text-muted">Indice de Qualité de l'Air (AQI)</div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-6 col-lg-4 mb-3">
+                  <div class="pollutant-label">PM2.5</div>
+                  <div class="pollutant-value">{{ latestSensorData.measurements.pm25.toFixed(1) }} <span class="unit">µg/m³</span></div>
+                </div>
+                <div class="col-6 col-lg-4 mb-3">
+                  <div class="pollutant-label">PM10</div>
+                  <div class="pollutant-value">{{ latestSensorData.measurements.pm10.toFixed(1) }} <span class="unit">µg/m³</span></div>
+                </div>
+              </div>
+              <div class="aqi-gauge-container mt-4">
+                <!-- La barre de fond avec le dégradé -->
+                <div class="aqi-gauge-bar"></div>
+                
+                <!-- Le curseur qui se positionne dynamiquement -->
+                <div class="aqi-gauge-cursor" [style.left]="getAqiCursorPosition()">
+                  <!-- Le petit triangle en dessous du curseur -->
+                  <div class="aqi-gauge-cursor-triangle"></div>
+                </div>
+
+                <!-- Les étiquettes des niveaux -->
+                <div class="aqi-gauge-labels">
+                  <span>Bon</span>
+                  <span>Modéré</span>
+                  <span>Mauvais</span>
+                  <span>Dangereux</span>
+                </div>
+              </div>
+            </div>
+  
+              <!-- =============================================== -->
+              <!-- FIN DE LA NOUVELLE SECTION -->
+              <!-- =============================================== -->
+
+            
+            <!-- Section Météo -->
+            <div class="col-md-5 p-4 p-lg-5 bg-light-subtle">
+              <h3 class="fw-bold mb-3">Météo</h3>
+              <div class="d-flex align-items-center mb-4">
+                <img [src]="weatherData.current.weather.iconUrl" alt="Icône météo" class="weather-icon me-3">
+                <div>
+                  <div class="weather-temp">{{ weatherData.current.temperature }}°C</div>
+                  <div class="weather-desc">{{ weatherData.current.weather.description }}</div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-6">
+                  <div class="weather-info"><i class="fas fa-wind me-2"></i> {{ weatherData.current.wind.speed_kmh }} km/h</div>
+                </div>
+                <div class="col-6">
+                  <div class="weather-info"><i class="fas fa-tint me-2"></i> {{ weatherData.current.humidity }}%</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

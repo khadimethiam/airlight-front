@@ -6,6 +6,9 @@ import { DashboardOverview } from './pages/dashboard-overview/dashboard-overview
 import { Auth } from './pages/auth/auth';
 import { AuthCallback } from './pages/auth-callback/auth-callback';
 import { authGuard } from './guards/auth.guard';
+import { SensorAnalysis } from './pages/sensor-analysis/sensor-analysis';
+import { AlertsCenter } from './pages/alerts-center/alerts-center';
+import { PredictionsViewer } from './pages/predictions-viewer/predictions-viewer';
 
 export const routes: Routes = [
     {
@@ -41,6 +44,21 @@ children: [ // <-- Déclaration des routes enfants
                 title: 'Dashboard - Vue d\'ensemble'
             },
             // Nous ajouterons les autres routes (capteurs, alertes...) ici plus tard
+            {
+            path: 'sensors', // La route /dashboard/sensors
+            component: SensorAnalysis,
+            title: 'Dashboard - Analyse des Capteurs'
+            },
+            {
+                path: 'alerts', // La route /dashboard/alerts
+                component: AlertsCenter,
+                title: 'Dashboard - Centre d\'Alertes'
+            },
+            {
+            path: 'predictions', // La route /dashboard/predictions
+            component: PredictionsViewer,
+            title: 'Dashboard - Prédictions IA'
+        }
         ]
     },
     {

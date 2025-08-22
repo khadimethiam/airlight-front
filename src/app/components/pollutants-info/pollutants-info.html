@@ -1,0 +1,66 @@
+<!-- src/app/components/pollutants-info/pollutants-info.html -->
+<section id="pollutants-info" class="py-5 bg-white">
+  <div class="container">
+    <!-- Titre de la section -->
+    <div class="text-center mb-5">
+      <h2 class="fw-bold text-dark">Comprendre ce que vous respirez</h2>
+      <p class="lead text-muted">Les principaux polluants de l'air et leur impact sur votre santé.</p>
+    </div>
+
+    <!-- Grille d'informations sur les polluants -->
+    <div class="row g-4 justify-content-center">
+
+      <!-- Carte PM2.5 -->
+      <div class="col-lg-4 col-md-6">
+        <div class="pollutant-card h-100">
+          <div class="pollutant-icon icon-pm25">
+            <i class="fas fa-lungs-virus"></i>
+          </div>
+          <h3 class="h5 fw-bold mt-4 mb-3">Particules Fines (PM2.5)</h3>
+          <p class="text-muted">
+            Ce sont des particules microscopiques (moins de 2.5 micromètres) qui peuvent pénétrer profondément dans les poumons et la circulation sanguine.
+          </p>
+          <ul class="list-unstyled mt-3">
+            <li><i class="fas fa-check-circle text-success me-2"></i>Source : Combustion (voitures, industries)</li>
+            <li><i class="fas fa-check-circle text-success me-2"></i>Risque : Maladies cardiaques et respiratoires</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Carte PM10 -->
+      <div class="col-lg-4 col-md-6">
+        <div class="pollutant-card h-100">
+          <div class="pollutant-icon icon-pm10">
+            <i class="fas fa-smog"></i>
+          </div>
+          <h3 class="h5 fw-bold mt-4 mb-3">Particules Grossières (PM10)</h3>
+          <p class="text-muted">
+            Plus grosses que les PM2.5, ces particules (poussière, pollen) irritent principalement les yeux, le nez et la gorge.
+          </p>
+          <ul class="list-unstyled mt-3">
+            <li><i class="fas fa-check-circle text-success me-2"></i>Source : Poussière de la route, chantiers</li>
+            <li><i class="fas fa-check-circle text-success me-2"></i>Risque : Asthme, allergies, irritations</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Carte CO2 -->
+      <div class="col-lg-4 col-md-6">
+        <div class="pollutant-card h-100">
+          <div class="pollutant-icon icon-co2">
+            <i class="fas fa-cloud"></i>
+          </div>
+          <h3 class="h5 fw-bold mt-4 mb-3">Dioxyde de Carbone (CO2)</h3>
+          <p class="text-muted">
+            Principalement un indicateur de la qualité de la ventilation intérieure. Un taux élevé peut causer somnolence et maux de tête.
+          </p>
+          <ul class="list-unstyled mt-3">
+            <li><i class="fas fa-check-circle text-success me-2"></i>Source : Respiration humaine, combustion</li>
+            <li><i class="fas fa-check-circle text-success me-2"></i>Risque : Baisse de concentration, fatigue</li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>

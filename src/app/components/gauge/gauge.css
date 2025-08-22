@@ -1,0 +1,86 @@
+.gauge-card {
+  background-color: #ffffff;
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  text-align: center;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+}
+
+.gauge-label {
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin-bottom: 1rem;
+  font-weight: 500;
+}
+
+.gauge-container {
+  width: 140px;
+  height: 70px; /* Demi-cercle */
+  position: relative;
+  overflow: hidden;
+  margin: 0 auto 1rem auto;
+}
+
+.gauge-background, .gauge-progress, .gauge-mask {
+  width: 140px;
+  height: 70px;
+  border-radius: 140px 140px 0 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.gauge-background {
+  background-color: #e5e7eb; /* Gris clair */
+}
+
+.gauge-progress {
+  background: conic-gradient(#10b981, #f59e0b, #ef4444);
+  clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 50% 100%, 0% 100%);
+  transform-origin: center bottom;
+  transition: transform 0.5s ease;
+}
+
+.gauge-mask {
+  background-color: #ffffff; /* Masque la partie inférieure */
+  top: 50%;
+}
+
+.gauge-inner-circle {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 110px;
+  height: 55px;
+  background-color: #ffffff;
+  border-radius: 110px 110px 0 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  padding-bottom: 0.5rem;
+}
+
+.gauge-value {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #1f2937;
+  line-height: 1;
+}
+
+.gauge-unit {
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+.gauge-status {
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+/* Classes de statut pour la couleur du texte */
+.status-bon { color: #10b981; }
+.status-modere { color: #f59e0b; }
+.status-mauvais { color: #ef4444; }
+.status-dangereux { color: #dc2626; }

@@ -1,14 +1,24 @@
+/* src/app/pages/dashboard/dashboard.css */
+
+:host {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1; /* Fait en sorte que le dashboard prenne tout l'espace vertical restant */
+}
+
 .dashboard-layout {
   display: flex;
-  min-height: 100vh;
-  background-color: #f4f7fa; /* Un fond gris clair pour la zone de contenu */
+  flex-grow: 1; /* Fait en sorte que le layout interne prenne toute la hauteur du :host */
+  width: 100%;
+  background-color: #f4f7fa;
 }
 
 .dashboard-main-content {
-  flex-grow: 1; /* Prend tout l'espace restant */
+  flex-grow: 1;
   padding: 2rem;
-  overflow-y: auto; /* Ajoute une barre de défilement si le contenu est trop long */
+  overflow-y: auto;
 }
+
 
 /* Pour les petits écrans, on pourrait ajuster la mise en page */
 @media (max-width: 768px) {
