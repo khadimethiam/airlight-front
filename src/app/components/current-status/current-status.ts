@@ -76,4 +76,35 @@ export class CurrentStatus implements OnInit {
       this.aqiStatus = { level: 'Dangereux', class: 'status-hazardous' };
     }
   }
+  getWeatherBackgroundClass(): string {
+    if (!this.weatherData) {
+      return 'bg-light-subtle'; // Classe par défaut
+    }
+
+    const iconCode = this.weatherData.current.weather.icon;
+
+    // 'd' dans le code signifie 'jour' (day), 'n' signifie 'nuit' (night)
+    const isDay = iconCode.includes('d');
+
+    if (['01d', '01n'].includes(iconCode)) { // Ciel clair
+      return isDay ? 'weather-bg-clear-day' : 'weather-bg-clear-night';
+    }
+    if (['02d', '02n', '03d', '03n', '04d', '04n'].includes(iconCode)) { // Nuageux
+      return isDay ? 'weather-bg-cloudy-day' : 'weather-bg-cloudy-night';
+    }
+    if (['09d', '09n', '10d', '10n'].includes(iconCode)) { // Pluie
+      return 'weather-bg-rain';
+    }
+    if (['11d', '11n'].includes(iconCode)) { // Orage
+      return 'weather-bg-thunderstorm';
+    }
+    if (['13d', '13n'].includes(iconCode)) { // Neige
+      return 'weather-bg-snow';
+    }
+    if (['50d', '50n'].includes(iconCode)) { // Brume/Poussière
+      return 'weather-bg-mist';
+    }
+
+    return 'bg-light-subtle'; // Fallback
+  }
 }

@@ -127,3 +127,78 @@
   font-size: 0.75rem;
   color: #6c757d;
 }
+.weather-section {
+  transition: background 0.5s ease-in-out;
+  color: #fff; /* Texte blanc par défaut pour les fonds sombres */
+}
+
+/* On s'assure que les titres et icônes sont bien visibles */
+.weather-section h3,
+.weather-section .weather-temp,
+.weather-section .weather-desc,
+.weather-section .weather-info {
+  color: #fff;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2); /* Ombre pour la lisibilité */
+}
+
+/* Ciel clair - Jour */
+.weather-bg-clear-day {
+  background: linear-gradient(135deg, #87CEEB, #4682B4);
+}
+
+/* Ciel clair - Nuit */
+.weather-bg-clear-night {
+  background: linear-gradient(135deg, #2c3e50, #465875);
+}
+
+/* Nuageux - Jour */
+.weather-bg-cloudy-day {
+  background: linear-gradient(135deg, #bdc3c7, #95a5a6);
+}
+.weather-bg-cloudy-day h3,
+.weather-bg-cloudy-day .weather-temp,
+.weather-bg-cloudy-day .weather-desc,
+.weather-bg-cloudy-day .weather-info {
+  color: #2c3e50; /* Texte foncé pour fond clair */
+  text-shadow: none;
+}
+
+/* Nuageux - Nuit */
+.weather-bg-cloudy-night {
+  background: linear-gradient(135deg, #7f8c8d, #596275);
+}
+
+/* Pluie */
+.weather-bg-rain {
+  background: linear-gradient(135deg, #34495e, #5d6d7e);
+}
+
+/* Orage */
+.weather-bg-thunderstorm {
+  background: linear-gradient(135deg, #2c3e50, #34495e);
+}
+
+/* Neige */
+.weather-bg-snow {
+  background: linear-gradient(135deg, #e0eafc, #cfdef3);
+  color: #333; /* Texte foncé pour fond clair */
+}
+.weather-bg-snow h3,
+.weather-bg-snow .weather-temp,
+.weather-bg-snow .weather-desc,
+.weather-bg-snow .weather-info {
+  color: #333;
+  text-shadow: none;
+}
+
+/* Brume / Poussière (Harmattan) */
+.weather-bg-mist {
+  background: linear-gradient(135deg, #d7ccc8, #bcaaa4);
+}
+.weather-bg-mist h3,
+.weather-bg-mist .weather-temp,
+.weather-bg-mist .weather-desc,
+.weather-bg-mist .weather-info {
+  color: #4e342e; /* Texte brun foncé pour fond sable */
+  text-shadow: none;
+}

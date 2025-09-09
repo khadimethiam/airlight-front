@@ -1,20 +1,54 @@
-/* Ajoute un padding-top pour que le contenu ne soit pas caché par le header fixe */
-section {
-  padding-top: 120px !important; /* !important pour surcharger Bootstrap si nécessaire */
+/* src/app/components/hero/hero.css */
+
+.hero-section {
+  /* Transition douce pour le changement de fond */
+  transition: background 1s ease-in-out;
+  color: #fff;
+  text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.3);
 }
 
+/* Style pour le mot mis en évidence dans le titre */
 .hero-highlight {
-  color: #0a2540; /* Une couleur sombre qui contraste bien avec le fond */
-  font-weight: 700; /* fw-bold */
+  display: inline-block;
+  padding: 0 0.5rem;
+  border-radius: 0.5rem;
+  background-color: rgba(255, 255, 255, 0.15);
 }
 
-/* Ajustement de la taille de la police pour les petits écrans */
-@media (max-width: 768px) {
-  h1.display-4 {
-    font-size: 2.5rem;
-  }
-  
-  section {
-    padding-top: 100px !important;
-  }
+/* Style du bouton d'appel à l'action */
+.hero-button {
+  color: #333;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.hero-button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+/* --- CLASSES DE FOND DYNAMIQUES --- */
+
+/* Fond par défaut ou pendant le chargement */
+.hero-bg-loading {
+  background: linear-gradient(135deg, #6c757d, #495057); /* Gris neutre */
+}
+
+/* Qualité de l'air BONNE */
+.hero-bg-good {
+  background-image: linear-gradient(135deg, #a8e063, #56ab2f, #87CEEB); /* Vert */
+}
+
+/* Qualité de l'air MODÉRÉE */
+.hero-bg-moderate {
+  background-image: linear-gradient(135deg, #fceabb, #f8b500, #f5af19); /* Jaune -> Orange */
+}
+
+/* Qualité de l'air MAUVAISE */
+.hero-bg-unhealthy {
+  background-image: linear-gradient(135deg, #f4791f, #f15f2c, #e94b3c); /* Orange -> Rouge */
+}
+
+/* Qualité de l'air DANGEREUSE */
+.hero-bg-hazardous {
+  background-image: linear-gradient(135deg, #cb2d3e, #ef473a, #4e2b40); /* Rouge -> Rouge foncé */
 }

@@ -57,7 +57,7 @@
 
             
             <!-- Section Météo -->
-            <div class="col-md-5 p-4 p-lg-5 bg-light-subtle">
+            <div class="col-md-5 p-4 p-lg-5 weather-section" [ngClass]="getWeatherBackgroundClass()">
               <h3 class="fw-bold mb-3">Météo</h3>
               <div class="d-flex align-items-center mb-4">
                 <img [src]="weatherData.current.weather.iconUrl" alt="Icône météo" class="weather-icon me-3">
@@ -68,10 +68,10 @@
               </div>
               <div class="row">
                 <div class="col-6">
-                  <div class="weather-info"><i class="fas fa-wind me-2"></i> {{ weatherData.current.wind.speed_kmh }} km/h</div>
+                  <div class="weather-info"><i class="fas fa-wind me-2"></i> Vent  {{ weatherData.current.wind.speed_kmh }} km/h</div>
                 </div>
                 <div class="col-6">
-                  <div class="weather-info"><i class="fas fa-tint me-2"></i> {{ weatherData.current.humidity }}%</div>
+                  <div class="weather-info"><i class="fas fa-tint me-2"></i>Humidite {{ weatherData.current.humidity }}%</div>
                 </div>
               </div>
             </div>

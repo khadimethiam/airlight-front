@@ -1,20 +1,21 @@
-<!-- La classe 'gradient-bg' vient de nos styles globaux (styles.css) -->
-<section class="gradient-bg text-white py-5">
+<!-- src/app/components/hero/hero.html -->
+
+<!-- La classe de fond est maintenant dynamique grâce à [ngClass] -->
+<section class="hero-section text-white py-5" [ngClass]="heroContent.backgroundClass">
   <div class="container text-center py-5">
     <div class="row justify-content-center">
-      <div class="col-lg-8">
-        <!-- Titre principal -->
-        <h1 class="display-4 fw-bold mb-4">
-          Respirez mieux avec <span class="hero-highlight">AirLight</span>
-        </h1>
-        <!-- Sous-titre -->
-        <p class="lead fs-4 mb-5">
-          Surveillez la qualité de l'air en temps réel et prenez des décisions éclairées pour votre santé
-        </p>
-        <!-- Bouton d'appel à l'action -->
-        <button (click)="scrollToSection('weather')" class="btn btn-primary btn-lg text-white px-5 py-3 fw-medium">
+      <div class="col-lg-9">
+        
+        <!-- Le titre est injecté dynamiquement avec [innerHTML] pour interpréter le <span> -->
+        <h1 class="display-4 fw-bold mb-4" [innerHTML]="heroContent.title"></h1>
+        
+        <!-- Le sous-titre est aussi dynamique -->
+        <p class="lead fs-4 mb-5">{{ heroContent.subtitle }}</p>
+        
+        <!-- Le bouton d'appel à l'action -->
+        <button (click)="scrollToStatus()" class="btn btn-light btn-lg px-5 py-3 fw-medium hero-button">
           <i class="fas fa-chart-line me-2"></i>
-          Découvrir les données
+          Voir l'état actuel
         </button>
       </div>
     </div>
