@@ -7,7 +7,6 @@ import { Hero } from '../../components/hero/hero';
 import { CurrentStatus } from '../../components/current-status/current-status';
 import { AirQuality } from '../../components/air-quality/air-quality';
 import { HealthTips } from '../../components/health-tips/health-tips';
-import { Cta } from '../../components/cta/cta';
 import { Footer } from '../../components/footer/footer';
 
 @Component({
@@ -21,7 +20,6 @@ import { Footer } from '../../components/footer/footer';
     CurrentStatus,
     AirQuality,
     HealthTips,
-    Cta,
     Footer,
     PollutantsInfo
   ],

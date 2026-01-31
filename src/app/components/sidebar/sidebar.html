@@ -1,45 +1,60 @@
-<aside class="sidebar">
+<!-- ✅ Bouton Toggle - HORS de la sidebar pour mobile -->
+<button class="toggle-btn"
+        (click)="toggleSidebar()"
+        [class.sidebar-open]="!isCollapsed"
+        title="Menu">
+  <i class="fas" [class.fa-bars]="isCollapsed" [class.fa-times]="!isCollapsed"></i>
+</button>
+
+<aside class="sidebar" [class.collapsed]="isCollapsed">
   <!-- Section du logo -->
   <div class="sidebar-header">
-    <div class="logo-icon-wrapper me-2">
+    <div class="logo-icon-wrapper">
       <i class="fas fa-wind text-white"></i>
     </div>
-    <span class="fw-bold fs-5 text-white">AirLight</span>
+    <span class="sidebar-text fw-bold fs-5 text-white">AirLight</span>
   </div>
 
   <!-- Liens de navigation -->
   <nav class="sidebar-nav">
     <ul>
-      <li>
-        <!-- routerLinkActive="active" ajoute la classe 'active' quand ce lien est actif -->
-        <a routerLink="overview" routerLinkActive="active">
-          <i class="fas fa-tachometer-alt fa-fw me-3"></i>
-          <span>Vue d'ensemble</span>
-        </a>
-      </li>
-      <li>
-        <a routerLink="sensors" routerLinkActive="active">
-          <i class="fas fa-broadcast-tower fa-fw me-3"></i>
-          <span>Capteurs</span>
-        </a>
-      </li>
-      <li>
-        <a routerLink="alerts" routerLinkActive="active">
-          <i class="fas fa-exclamation-triangle fa-fw me-3"></i>
-          <span>Alertes</span>
-        </a>
-      </li>
-      <li>
-        <a routerLink="predictions" routerLinkActive="active">
-          <i class="fas fa-brain fa-fw me-3"></i>
-          <span>Prédictions IA</span>
-        </a>
-      </li>
-      <!-- Nous ajouterons un *ngIf pour le lien admin plus tard -->
+      <!-- ✅ Vue d'ensemble - ADMIN UNIQUEMENT -->
       <li *ngIf="isAdmin$ | async">
-        <a routerLink="admin" routerLinkActive="active">
-          <i class="fas fa-user-shield fa-fw me-3"></i>
-          <span>Acceuil</span>
+        <a routerLink="overview" routerLinkActive="active" title="Vue d'ensemble">
+          <i class="fas fa-tachometer-alt fa-fw"></i>
+          <span class="sidebar-text">Vue d'ensemble</span>
+        </a>
+      </li>
+
+      <!-- ✅ Capteurs - Visible par TOUS -->
+      <li>
+        <a routerLink="sensors" routerLinkActive="active" title="Capteurs">
+          <i class="fas fa-broadcast-tower fa-fw"></i>
+          <span class="sidebar-text">Capteurs</span>
+        </a>
+      </li>
+
+      <!-- ✅ Alertes - Visible par TOUS -->
+      <li>
+        <a routerLink="alerts" routerLinkActive="active" title="Alertes">
+          <i class="fas fa-exclamation-triangle fa-fw"></i>
+          <span class="sidebar-text">Alertes</span>
+        </a>
+      </li>
+
+      <!-- ✅ Prédictions IA - Visible par TOUS -->
+      <li>
+        <a routerLink="predictions" routerLinkActive="active" title="Prédictions IA">
+          <i class="fas fa-brain fa-fw"></i>
+          <span class="sidebar-text">Prédictions IA</span>
+        </a>
+      </li>
+
+      <!-- ✅ Accueil - EN DERNIER - Visible par TOUS -->
+      <li>
+        <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" title="Retour à l'accueil">
+          <i class="fas fa-home fa-fw"></i>
+          <span class="sidebar-text">Accueil</span>
         </a>
       </li>
     </ul>
@@ -48,10 +63,12 @@
   <!-- Section utilisateur et déconnexion -->
   <div class="sidebar-footer" *ngIf="user$ | async as user">
     <div class="user-info">
-      <img [src]="user.avatar || 'https://i.pravatar.cc/32?u=' + user.id" alt="Avatar" class="user-avatar">
-      <div class="user-details">
+      <img [src]="user.avatar || 'https://i.pravatar.cc/32?u=' + user.id"
+           alt="Avatar"
+           class="user-avatar">
+      <div class="user-details sidebar-text">
         <span class="user-name">{{ user.firstName }} {{ user.lastName }}</span>
-        <span class="user-role">{{ user.role }}</span>
+        <span class="user-role">{{ getRoleLabel(user.role) }}</span>
       </div>
     </div>
     <button (click)="logout()" class="logout-button" title="Se déconnecter">
@@ -59,3 +76,8 @@
     </button>
   </div>
 </aside>
+
+<!-- ✅ Overlay pour mobile -->
+<div class="sidebar-overlay"
+     [class.active]="!isCollapsed && isMobile"
+     (click)="closeSidebar()"></div>

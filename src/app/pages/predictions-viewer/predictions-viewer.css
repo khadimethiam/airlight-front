@@ -1,0 +1,195 @@
+/* predictions-viewer.css */
+
+/* Cartes améliorées */
+.card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Select amélioré */
+.form-select {
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+}
+
+.form-select:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 0.2rem rgba(59, 130, 246, 0.25);
+}
+
+.form-select:disabled {
+  cursor: not-allowed;
+  background-color: #f8f9fa;
+}
+
+/* Badges */
+.badge {
+  font-weight: 500;
+  padding: 0.35em 0.65em;
+}
+
+/* Tableau */
+.table {
+  font-size: 0.95rem;
+}
+
+.table thead th {
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  letter-spacing: 0.5px;
+  border-bottom: 2px solid #dee2e6;
+}
+
+.table tbody tr {
+  transition: background-color 0.2s ease;
+}
+
+.table tbody tr:hover {
+  background-color: rgba(59, 130, 246, 0.05);
+}
+
+/* Progress bar améliorée */
+.progress {
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+.progress-bar {
+  transition: width 0.6s ease;
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+/* Spinners */
+.spinner-border {
+  animation: spinner-border 0.75s linear infinite;
+}
+
+/* Icônes */
+.bi {
+  vertical-align: middle;
+}
+
+/* Cards avec bordure colorée */
+.border-start {
+  border-left-width: 4px !important;
+}
+
+/* Cartes de statistiques */
+.card-body h4 {
+  color: #1f2937;
+}
+
+.card-body h6 {
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Graphique container */
+canvas {
+  max-height: 400px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .display-6 {
+    font-size: 1.5rem;
+  }
+  
+  .card-body h4 {
+    font-size: 1.25rem;
+  }
+  
+  .table {
+    font-size: 0.875rem;
+  }
+  
+  .progress {
+    min-width: 80px !important;
+  }
+}
+
+/* Animation pour le chargement */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.card {
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* Highlight des valeurs élevées */
+.table-warning {
+  background-color: rgba(255, 193, 7, 0.1) !important;
+}
+
+.table-danger {
+  background-color: rgba(220, 53, 69, 0.1) !important;
+}
+
+/* Labels avec icônes */
+.form-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+/* Titre de carte */
+.card-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+/* Messages d'information */
+.text-muted {
+  color: #6b7280 !important;
+}
+
+/* Amélioration du contraste */
+.fw-bold {
+  font-weight: 700 !important;
+}
+
+/* Amélioration des badges de niveau */
+.badge.bg-success {
+  background-color: #10b981 !important;
+}
+
+.badge.bg-primary {
+  background-color: #3b82f6 !important;
+}
+
+.badge.bg-warning {
+  background-color: #f59e0b !important;
+  color: #000 !important;
+}
+
+.badge.bg-danger {
+  background-color: #ef4444 !important;
+}
+
+.badge.bg-info {
+  background-color: #06b6d4 !important;
+}
+
+.badge.bg-secondary {
+  background-color: #6b7280 !important;
+}

@@ -1,10 +1,10 @@
-<!-- src/app/pages/dashboard-overview/dashboard-overview.html -->
+<!-- src/app/pages/dashboard-overview/dashboard-overview.html - AVEC LOADER GRAPHIQUE -->
 
 <div class="container-fluid">
   <!-- En-tête de la page -->
   <div class="mb-4">
     <h1 class="display-5 fw-bold text-dark">Dashboard Principal</h1>
-    <p class="text-muted">Vue d'ensemble de la qualité de l'air et de l'état du système.</p>
+    <p class="text-muted">Vue d'ensemble de la qualité de l'air en temps réel</p>
   </div>
 
   <!-- Indicateur de chargement global -->
@@ -20,128 +20,145 @@
     <strong>Erreur :</strong> {{ errorMessage }}
   </div>
 
-  <!-- Conteneur principal des données (affiché seulement si tout est chargé sans erreur) -->
+  <!-- Conteneur principal des données -->
   <div *ngIf="!isLoading && !errorMessage && dashboardData" class="row g-4">
-    
-    <!-- Widget: État Global -->
-    <div class="col-xl-3 col-md-6">
-      <div class="stats-card">
-        <div class="stats-card-content">
-          <div class="stats-card-info">
-            <p class="label">État Global</p>
-            <p class="value status-good">Bon</p> <!-- Note: Ce widget est statique pour l'instant -->
-          </div>
-          <i class="fas fa-leaf stats-card-icon status-good"></i>
-        </div>
-      </div>
-    </div>
 
-    <!-- Widget: Capteurs Actifs -->
+    <!-- ========================================= -->
+    <!-- LIGNE 1 : KPIs PRINCIPAUX (4 widgets) -->
+    <!-- ========================================= -->
+
+    <!-- Widget 1: Capteurs Actifs -->
     <div class="col-xl-3 col-md-6">
       <div class="stats-card">
         <div class="stats-card-content">
           <div class="stats-card-info">
             <p class="label">Capteurs Actifs</p>
             <p class="value status-sensors">{{ dashboardData.overview.active_sensors }}</p>
+            <p class="sublabel">capteurs en ligne</p>
           </div>
           <i class="fas fa-microchip stats-card-icon status-sensors"></i>
         </div>
       </div>
     </div>
 
-    <!-- Widget: Alertes (24h) -->
+    <!-- Widget 2: Données Enregistrées (24h) -->
     <div class="col-xl-3 col-md-6">
       <div class="stats-card">
+        <div class="stats-card-content">
+          <div class="stats-card-info">
+            <p class="label">Données (24h)</p>
+            <p class="value status-moderate">{{ dashboardData.overview.sensor_data_24h }}</p>
+            <p class="sublabel">mesures enregistrées</p>
+          </div>
+          <i class="fas fa-database stats-card-icon status-moderate"></i>
+        </div>
+      </div>
+    </div>
+
+    <!-- Widget 3: Alertes Actives -->
+    <div class="col-xl-3 col-md-6">
+      <div class="stats-card clickable" (click)="navigateToAlerts()">
         <div class="stats-card-content">
           <div class="stats-card-info">
             <p class="label">Alertes (24h)</p>
             <p class="value status-alerts">{{ dashboardData.overview.alerts_24h }}</p>
+            <p class="sublabel">notifications envoyées</p>
           </div>
-          <!-- L'animation 'pulse' ne s'active que s'il y a des alertes -->
-          <i class="fas fa-exclamation-triangle stats-card-icon status-alerts" [class.alert-badge]="dashboardData.overview.alerts_24h > 0"></i>
+          <i class="fas fa-exclamation-triangle stats-card-icon status-alerts"
+             [class.alert-badge]="dashboardData.overview.alerts_24h > 0"></i>
         </div>
       </div>
     </div>
 
-    <!-- Widget: Prédiction -->
+    <!-- Widget 4: Total Alertes -->
     <div class="col-xl-3 col-md-6">
       <div class="stats-card">
         <div class="stats-card-content">
           <div class="stats-card-info">
-            <p class="label">Prédiction</p>
-            <p class="value fs-5 status-prediction">Amélioration</p> <!-- Note: Ce widget est statique pour l'instant -->
+            <p class="label">Total Alertes</p>
+            <p class="value status-prediction">{{ dashboardData.overview.total_alerts }}</p>
+            <p class="sublabel">depuis le début</p>
           </div>
-          <i class="fas fa-brain stats-card-icon status-prediction"></i>
+          <i class="fas fa-chart-line stats-card-icon status-prediction"></i>
         </div>
       </div>
     </div>
 
-    <!-- Carte des Capteurs et Graphique de Tendance -->
-    <div class="">
+
+    <!-- ========================================= -->
+    <!-- LIGNE 3 : GRAPHIQUES PRINCIPAUX -->
+    <!-- ========================================= -->
+
+    <!-- Graphique: Tendance Globale AQI -->
+    <div class="col-lg-8">
       <div class="card h-100 shadow-sm">
         <div class="card-body d-flex flex-column">
-          <h5 class="card-title mb-3">Tendance Globale AQI (24h)</h5>
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="card-title mb-0">Évolution AQI - Dernières 24h</h5>
+            <div class="btn-group btn-group-sm" role="group">
+              <button type="button" class="btn btn-outline-secondary"
+                      [class.active]="chartPeriod === '6h'"
+                      [disabled]="isChartLoading"
+                      (click)="changeChartPeriod('6h')">6h</button>
+              <button type="button" class="btn btn-outline-secondary"
+                      [class.active]="chartPeriod === '12h'"
+                      [disabled]="isChartLoading"
+                      (click)="changeChartPeriod('12h')">12h</button>
+              <button type="button" class="btn btn-outline-secondary"
+                      [class.active]="chartPeriod === '24h'"
+                      [disabled]="isChartLoading"
+                      (click)="changeChartPeriod('24h')">24h</button>
+            </div>
+          </div>
+
+          <!-- ✅ Conteneur du graphique avec loader -->
           <div class="flex-grow-1" style="position: relative; min-height: 350px;">
-            <canvas #trendChart></canvas>
+            <!-- ✅ Loader pour le graphique -->
+            <div *ngIf="isChartLoading" class="chart-loader">
+              <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+              </div>
+              <p class="mt-2">Chargement du graphique...</p>
+            </div>
+
+            <!-- Canvas du graphique -->
+            <canvas #trendChart [class.chart-loading]="isChartLoading"></canvas>
           </div>
         </div>
       </div>
     </div>
 
-     <!--
-    <div class="col-lg-5 mt-4">
+    <!-- Top 5 Pires Capteurs -->
+    <div class="col-lg-4">
       <div class="card h-100 shadow-sm">
-        <div class="card-body d-flex flex-column">
-          <h5 class="card-title mb-3">Carte des Capteurs</h5>
-          <div #map class="map-container"></div>
-        </div>
-      </div>
-    </div>
--->
-    <!-- **SECTION DU TABLEAU DES ALERTES RÉCENTES** -->
-    <div class="col-12 mt-4">
-      <div class="card shadow-sm">
         <div class="card-body">
-          <h5 class="card-title">Alertes Récentes</h5>
-          <div class="table-responsive">
-            <table class="table table-hover align-middle mb-0">
-              <thead>
-                <tr>
-                  <th scope="col">Sévérité</th>
-                  <th scope="col">Capteur</th>
-                  <th scope="col">Message</th>
-                  <th scope="col">Date</th>
-                </tr>
-              </thead>
-              <tbody>
-                <!-- Boucle sur les alertes récentes récupérées de l'API -->
-                <tr *ngFor="let alert of dashboardData.alerts.recent">
-                  <td>
-                    <!-- Badge de sévérité avec couleur dynamique -->
-                    <span class="badge fs-6" [ngClass]="{
-                      'bg-danger text-white': alert.severity === 'hazardous' || alert.severity === 'unhealthy',
-                      'bg-warning text-dark': alert.severity === 'poor',
-                      'bg-info text-dark': alert.severity === 'moderate',
-                      'bg-success text-white': alert.severity === 'good'
-                    }">{{ alert.severity }}</span>
-                  </td>
-                  <td class="text-muted">{{ alert.sensorId }}</td>
-                  <td>{{ alert.message }}</td>
-                  <td>{{ alert.createdAt | date:'dd/MM/yy HH:mm' }}</td>
-                </tr>
-                <!-- Message si aucune alerte récente n'est trouvée -->
-                <tr *ngIf="dashboardData.alerts.recent.length === 0">
-                  <td colspan="4" class="text-center text-muted py-4">
-                    <i class="fas fa-check-circle text-success fs-4 mb-2"></i>
-                    <p class="mb-0">Aucune alerte récente à signaler.</p>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+          <h5 class="card-title mb-3">🚨 Zones à Surveiller</h5>
+
+          <div *ngIf="worstSensors && worstSensors.length > 0; else noWorstSensors" class="worst-sensors-list">
+            <div *ngFor="let sensor of worstSensors; let i = index"
+                 class="worst-sensor-item"
+                 (click)="navigateToSensor(sensor.sensorId)">
+              <div class="worst-sensor-rank">{{ i + 1 }}</div>
+              <div class="worst-sensor-info">
+                <div class="worst-sensor-name">{{ sensor.name }}</div>
+                <div class="worst-sensor-location">{{ sensor.location }}</div>
+              </div>
+              <div class="worst-sensor-aqi" [ngClass]="getAQIClass(sensor.currentAQI)">
+                {{ sensor.currentAQI | number:'1.0-0' }}
+              </div>
+            </div>
           </div>
+
+          <ng-template #noWorstSensors>
+            <div class="text-center text-muted py-4">
+              <i class="fas fa-check-circle text-success fs-4 mb-2"></i>
+              <p class="mb-0">Tous les capteurs dans la norme !</p>
+            </div>
+          </ng-template>
         </div>
       </div>
     </div>
+
     
   </div>
 </div>

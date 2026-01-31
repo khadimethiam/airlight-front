@@ -1,31 +1,124 @@
+/* Carte principale météo */
 .weather-main-card {
-  background: linear-gradient(135deg, #0d6efd, #0dcaf0); /* Dégradé Bootstrap */
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   border: none;
+  box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+  min-height: 450px; /* ✅ Hauteur minimum */
 }
 
+/* Animation hover */
 .card-hover {
   transition: transform 0.3s ease, box-shadow 0.3s ease;
-  height: 100%; /* ✅ Important pour l’alignement vertical */
+  height: 100%;
+  border: none;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .card-hover:hover {
   transform: translateY(-8px);
-  box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.15) !important;
-}
-/* Flex fill */
-.flex-column .d-flex .flex-fill{
- border-width:2px !important;
- transform:translatex(0px) translatey(0px);
- border-top-left-radius:14px;
- border-top-right-radius:14px;
- border-bottom-left-radius:14px;
- border-bottom-right-radius:14px;
+  box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.2) !important;
 }
 
-/* Weather main card */
-.align-items-stretch .d-flex .weather-main-card{
- border-top-left-radius:15px;
- border-top-right-radius:15px;
- border-bottom-left-radius:15px;
- border-bottom-right-radius:15px;
+/* ✅ Container pour icône météo */
+.weather-icon-container {
+  width: 120px;
+  height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  padding: 10px;
+}
+
+/* ✅ Icône météo OpenWeather */
+.weather-icon-img {
+  width: 100px;
+  height: 100px;
+  animation: float 3s ease-in-out infinite;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+  object-fit: contain; /* ✅ Important pour l'affichage */
+}
+
+/* Animation flottante */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+/* ✅ Items de détails météo */
+.weather-detail-item {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 12px;
+  border-radius: 8px;
+  backdrop-filter: blur(10px);
+}
+
+.weather-detail-item i {
+  font-size: 1.2rem;
+}
+
+.weather-detail-item .small {
+  display: block;
+  margin-top: 4px;
+}
+
+/* ✅ Cercles d'icônes pour cartes secondaires */
+.icon-circle {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* Styles responsive */
+@media (max-width: 991px) {
+  .weather-main-card {
+    margin-bottom: 1rem;
+    min-height: auto;
+  }
+  
+  .weather-icon-container {
+    width: 90px;
+    height: 90px;
+  }
+  
+  .weather-icon-img {
+    width: 70px;
+    height: 70px;
+  }
+}
+
+/* Amélioration cartes secondaires */
+.flex-column .d-flex .flex-fill {
+  border-radius: 14px;
+  background: white;
+}
+
+.align-items-stretch .d-flex .weather-main-card {
+  border-radius: 15px;
+}
+
+/* Spinner custom */
+.spinner-border {
+  border-width: 0.3rem;
+}
+
+/* Bouton actualiser */
+.weather-main-card .btn-light {
+  opacity: 0.9;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.weather-main-card .btn-light:hover {
+  opacity: 1;
+  background: white;
 }

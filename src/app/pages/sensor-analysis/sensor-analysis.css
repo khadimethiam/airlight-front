@@ -1,0 +1,377 @@
+/* src/app/pages/sensor-analysis/sensor-analysis.css */
+
+/* ================================================ */
+/* STATUT DU CAPTEUR */
+/* ================================================ */
+
+.sensor-status-badge {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  border-radius: 2rem;
+  font-weight: 600;
+  font-size: 0.875rem;
+  transition: all 0.3s ease;
+}
+
+.status-online {
+  background-color: #d1fae5;
+  color: #065f46;
+  border: 1px solid #10b981;
+}
+
+.status-offline {
+  background-color: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #ef4444;
+}
+
+.status-unknown {
+  background-color: #e5e7eb;
+  color: #6b7280;
+  border: 1px solid #9ca3af;
+}
+
+.sensor-status-badge i {
+  font-size: 0.625rem;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+/* ================================================ */
+/* CARTES ET CONTENEURS */
+/* ================================================ */
+
+.card {
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.card-header {
+  background: white;
+  border-bottom: 1px solid #e5e7eb;
+  border-radius: 12px 12px 0 0;
+  padding: 1rem 1.5rem;
+}
+
+.card-header h5 {
+  margin: 0;
+  color: #1f2937;
+  font-weight: 600;
+}
+
+.card-body {
+  padding: 1.5rem;
+}
+
+/* ================================================ */
+/* CHART CONTAINER */
+/* ================================================ */
+
+.chart-container {
+  position: relative;
+  width: 100%;
+}
+
+.chart-container canvas {
+  display: block;
+  width: 100% !important;
+}
+
+/* ================================================ */
+/* TABLEAU */
+/* ================================================ */
+
+.table {
+  margin-bottom: 0;
+}
+
+.table thead th {
+  background-color: #f9fafb;
+  color: #6b7280;
+  font-weight: 600;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 2px solid #e5e7eb;
+  padding: 0.75rem;
+}
+
+.table tbody td {
+  padding: 0.75rem;
+  vertical-align: middle;
+  font-size: 0.875rem;
+  color: #1f2937;
+}
+
+.table tbody tr {
+  transition: background-color 0.2s;
+}
+
+.table tbody tr:hover {
+  background-color: #f9fafb;
+}
+
+/* ================================================ */
+/* BADGES */
+/* ================================================ */
+
+.badge {
+  padding: 0.375rem 0.75rem;
+  font-weight: 600;
+  font-size: 0.875rem;
+  border-radius: 0.5rem;
+}
+
+.badge.bg-success {
+  background-color: #10b981 !important;
+}
+
+.badge.bg-info {
+  background-color: #3b82f6 !important;
+}
+
+.badge.bg-warning {
+  background-color: #f59e0b !important;
+  color: #1f2937 !important;
+}
+
+.badge.bg-danger {
+  background-color: #ef4444 !important;
+}
+
+.badge.bg-dark {
+  background-color: #1f2937 !important;
+}
+
+.badge.bg-primary {
+  background-color: #3b82f6 !important;
+}
+
+/* ================================================ */
+/* PAGINATION - Style Centre d'Alertes */
+/* ================================================ */
+
+.pagination {
+  margin: 0;
+}
+
+.page-link {
+  color: #3b82f6;
+  border-color: #e5e7eb;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+
+.page-link:hover {
+  background-color: #eff6ff;
+  border-color: #3b82f6;
+  color: #2563eb;
+}
+
+.page-item.active .page-link {
+  background-color: #3b82f6;
+  border-color: #3b82f6;
+  color: white;
+  cursor: default;
+}
+
+.page-item.disabled .page-link {
+  color: #9ca3af;
+  background-color: #f9fafb;
+  border-color: #e5e7eb;
+  cursor: not-allowed;
+}
+
+.page-link button {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+/* ================================================ */
+/* FORM SELECT */
+/* ================================================ */
+
+.form-select {
+  border-radius: 0.5rem;
+  border-color: #e5e7eb;
+  padding: 0.625rem 1rem;
+  font-size: 0.875rem;
+  transition: all 0.2s;
+}
+
+.form-select:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.form-label {
+  color: #1f2937;
+  font-size: 0.875rem;
+  margin-bottom: 0.5rem;
+}
+
+/* ================================================ */
+/* ICONES */
+/* ================================================ */
+
+.fa-map-marker-alt,
+.fa-location-dot,
+.fa-chart-line,
+.fa-table {
+  color: #3b82f6;
+}
+
+.fa-inbox {
+  color: #d1d5db !important;
+}
+
+/* ================================================ */
+/* RESPONSIVE */
+/* ================================================ */
+
+/* Tablette */
+@media (max-width: 992px) {
+  .card-body {
+    padding: 1rem;
+  }
+
+  .table {
+    font-size: 0.8rem;
+  }
+
+  .table thead th,
+  .table tbody td {
+    padding: 0.5rem;
+  }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .card-body {
+    padding: 0.75rem;
+  }
+
+  .sensor-status-badge {
+    margin-top: 1rem;
+    display: block;
+    text-align: center;
+    font-size: 0.75rem;
+    padding: 0.375rem 0.75rem;
+  }
+
+  /* ✅ Tableau avec scroll horizontal */
+  .table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin: 0 -0.75rem; /* Étend jusqu'aux bords */
+    padding: 0 0.75rem;
+  }
+
+  .table {
+    font-size: 0.7rem;
+    min-width: 600px; /* Force le scroll horizontal */
+    margin-bottom: 1rem;
+  }
+
+  .table thead th {
+    padding: 0.5rem 0.25rem;
+    font-size: 0.65rem;
+    white-space: nowrap;
+  }
+
+  .table tbody td {
+    padding: 0.5rem 0.25rem;
+    font-size: 0.7rem;
+    white-space: nowrap;
+  }
+
+  .badge {
+    font-size: 0.65rem;
+    padding: 0.25rem 0.4rem;
+  }
+
+  .chart-container {
+    height: 250px !important;
+  }
+
+  /* ✅ Pagination verticale sur mobile */
+  .d-flex.justify-content-between.align-items-center {
+    flex-direction: column !important;
+    gap: 1rem;
+    align-items: stretch !important;
+  }
+
+  .text-muted {
+    font-size: 0.75rem;
+    text-align: center;
+    order: 1; /* Texte compteur en premier */
+  }
+
+  nav[aria-label] {
+    order: 2; /* Navigation en second */
+    width: 100%;
+  }
+
+  .pagination {
+    font-size: 0.75rem;
+    justify-content: center !important;
+    flex-wrap: nowrap;
+    gap: 0.25rem;
+  }
+
+  .page-link {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.75rem;
+  }
+}
+
+/* Très petit mobile */
+@media (max-width: 576px) {
+  .table {
+    font-size: 0.65rem;
+    min-width: 550px;
+  }
+
+  .table thead th,
+  .table tbody td {
+    padding: 0.375rem 0.2rem;
+    font-size: 0.65rem;
+  }
+
+  .badge {
+    font-size: 0.6rem;
+    padding: 0.2rem 0.35rem;
+  }
+
+  /* Pagination encore plus compacte */
+  .page-link {
+    padding: 0.375rem 0.5rem;
+    font-size: 0.7rem;
+  }
+}
+
+/* ================================================ */
+/* UTILITIES */
+/* ================================================ */
+
+.text-muted {
+  color: #6b7280 !important;
+}
+
+.shadow-sm {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+}
+
+hr {
+  border-color: #e5e7eb;
+  opacity: 1;
+}

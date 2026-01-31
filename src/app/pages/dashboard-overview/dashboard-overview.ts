@@ -1,15 +1,15 @@
-// src/app/pages/dashboard-overview/dashboard-overview.ts
+// src/app/pages/dashboard-overview/dashboard-overview.ts - VERSION CORRIGÉE
 
-// --- IMPORTS CORRIGÉS ---
 import { Component, OnInit, OnDestroy, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 import { DashboardService, DashboardData } from '../../services/dashboard';
 import { SensorService, Sensor } from '../../services/sensor';
 
-// Imports pour Chart.js et Leaflet
+// Imports pour Chart.js
 import { Chart, registerables } from 'chart.js';
-import * as L from 'leaflet';
 import { FormsModule } from '@angular/forms';
+import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-dashboard-overview',
@@ -18,25 +18,26 @@ import { FormsModule } from '@angular/forms';
   templateUrl: './dashboard-overview.html',
   styleUrls: ['./dashboard-overview.css']
 })
-// --- NOM DE CLASSE CORRIGÉ ---
 export class DashboardOverview implements OnInit, AfterViewInit, OnDestroy {
-  
-  // --- DÉCLARATIONS DE PROPRIÉTÉS CORRIGÉES ---
+
   @ViewChild('trendChart') private trendChartCanvas!: ElementRef<HTMLCanvasElement>;
-  @ViewChild('map') private mapContainer!: ElementRef<HTMLDivElement>;
   private isViewInitialized = false;
+  private chartDataCache: any[] | null = null; // ✅ NOUVEAU : Cache des données
 
   public dashboardData?: DashboardData['data'];
   public sensors: Sensor[] = [];
+  public worstSensors: any[] = [];
   public isLoading = true;
   public errorMessage: string | null = null;
+  public chartPeriod: '6h' | '12h' | '24h' = '24h';
+  public isChartLoading = false;
 
   private trendChart?: Chart;
-  private map?: L.Map;
 
   constructor(
     private dashboardService: DashboardService,
-    private sensorService: SensorService
+    private sensorService: SensorService,
+    private router: Router
   ) {
     Chart.register(...registerables);
   }
@@ -46,126 +47,315 @@ export class DashboardOverview implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit(): void {
-    this.isViewInitialized = true; // La vue est maintenant prête
-    // Si les données sont déjà arrivées avant que la vue ne soit prête, on initialise les graphiques
-    if (this.dashboardData) {
-      this.initVisualizations();
-    }
+    console.log('✅ ngAfterViewInit appelé');
+    this.isViewInitialized = true;
+
+    // ✅ CORRECTION : Attendre un cycle pour que le canvas soit prêt
+    setTimeout(() => {
+      if (this.chartDataCache) {
+        console.log('📊 Création du graphique avec données cachées');
+        this.initTrendChart(this.chartDataCache);
+        this.chartDataCache = null;
+      }
+    }, 100);
   }
+
+  // ============================================
+  // CHARGEMENT DES DONNÉES
+  // ============================================
 
   loadDashboardData(): void {
     this.isLoading = true;
     this.errorMessage = null;
 
-    this.dashboardService.getOverviewData().subscribe({
-      next: (response) => {
-        if (response.success) {
-          this.dashboardData = response.data;
-        } else {
-          this.errorMessage = "Les données du tableau de bord n'ont pas pu être chargées.";
+    // ✅ Charger dashboard et sensors en parallèle, graphique séparément
+    forkJoin({
+      dashboard: this.dashboardService.getOverviewData(),
+      sensors: this.sensorService.getSensors()
+    }).subscribe({
+      next: ({ dashboard, sensors }) => {
+        console.log('📥 Données dashboard reçues');
+
+        // Dashboard data
+        if (dashboard.success) {
+          this.dashboardData = dashboard.data;
+          this.extractWorstSensors();
         }
+
+        // Sensors data
+        if (sensors.success) {
+          this.sensors = sensors.data;
+          this.updateWorstSensorsFromAPI();
+        }
+
+        this.isLoading = false;
+
+        // ✅ Charger le graphique APRÈS que le dashboard soit affiché
+        setTimeout(() => {
+          this.loadChartData();
+        }, 50);
       },
       error: (err) => {
-        this.handleError(err);
+        console.error('❌ Erreur chargement dashboard:', err);
+        this.errorMessage = 'Erreur lors du chargement des données';
+        this.isLoading = false;
+      }
+    });
+  }
+
+  // ============================================
+  // GESTION DU GRAPHIQUE
+  // ============================================
+
+  loadChartData(): void {
+    console.log('📊 loadChartData appelé - Vue initialisée:', this.isViewInitialized);
+
+    if (!this.isViewInitialized) {
+      console.warn('⚠️ Vue pas encore initialisée');
+      return;
+    }
+
+    this.isChartLoading = true;
+
+    this.dashboardService.getGlobalSensorStats(this.chartPeriod).subscribe({
+      next: (statsResponse) => {
+        console.log('📈 Données graphique reçues:', statsResponse);
+
+        if (statsResponse.success && statsResponse.data?.timeEvolution) {
+          // ✅ Si la vue n'est pas encore prête, mettre en cache
+          if (!this.trendChartCanvas) {
+            console.log('💾 Canvas pas prêt, mise en cache');
+            this.chartDataCache = statsResponse.data.timeEvolution;
+          } else {
+            this.initTrendChart(statsResponse.data.timeEvolution);
+          }
+        } else {
+          console.warn('⚠️ Pas de données timeEvolution');
+        }
+
+        this.isChartLoading = false;
       },
-      complete: () => {
-        this.loadChartAndMapData();
+      error: (err) => {
+        console.error('❌ Erreur chargement graphique:', err);
+        this.isChartLoading = false;
       }
     });
   }
 
- initVisualizations(): void {
-    this.dashboardService.getGlobalSensorStats('24h').subscribe(statsResponse => {
-      if (statsResponse.success) {
-        this.initTrendChart(statsResponse.data.timeEvolution);
-      }
-    });
-    this.initMap();
-  }
+  changeChartPeriod(period: '6h' | '12h' | '24h'): void {
+    console.log('🔄 Changement période:', period);
+    this.chartPeriod = period;
+    this.isChartLoading = true;
 
-  loadChartAndMapData(): void {
-    this.dashboardService.getGlobalSensorStats('24h').subscribe(statsResponse => {
-      if (statsResponse.success) {
-        this.initTrendChart(statsResponse.data.timeEvolution);
+    this.dashboardService.getGlobalSensorStats(period).subscribe({
+      next: (statsResponse) => {
+        if (statsResponse.success && statsResponse.data?.timeEvolution) {
+          this.initTrendChart(statsResponse.data.timeEvolution);
+        }
+        this.isChartLoading = false;
+      },
+      error: (err) => {
+        console.error('❌ Erreur changement période:', err);
+        this.isChartLoading = false;
       }
-    });
-
-    this.sensorService.getSensors().subscribe(sensorsResponse => {
-      if (sensorsResponse.success) {
-        this.sensors = sensorsResponse.data;
-        // On attend que la vue soit prête pour initialiser la carte
-        setTimeout(() => this.initMap(), 0);
-      }
-      this.isLoading = false;
     });
   }
 
   private initTrendChart(timeEvolution: any[]): void {
-    if (!this.trendChartCanvas || !timeEvolution || timeEvolution.length === 0) return;
+    console.log('🎨 initTrendChart appelé avec', timeEvolution?.length, 'points');
+
+    // ✅ Vérifications robustes
+    if (!this.trendChartCanvas) {
+      console.error('❌ Canvas pas encore disponible');
+      this.chartDataCache = timeEvolution; // Mettre en cache pour plus tard
+      return;
+    }
+
+    if (!timeEvolution || timeEvolution.length === 0) {
+      console.warn('⚠️ Pas de données pour le graphique');
+      return;
+    }
+
     const ctx = this.trendChartCanvas.nativeElement.getContext('2d');
-    if (!ctx) return;
+    if (!ctx) {
+      console.error('❌ Impossible d\'obtenir le contexte 2D');
+      return;
+    }
 
-    const labels = timeEvolution.map(d => new Date(d.timestamp).toLocaleTimeString('fr-FR', { hour: '2-digit' }) + 'h');
-    const data = timeEvolution.map(d => d.avgAQI);
-
-    if (this.trendChart) this.trendChart.destroy();
-
-    this.trendChart = new Chart(ctx, {
-      type: 'line',
-      data: {
-        labels: labels,
-        datasets: [{
-          label: 'AQI Moyen',
-          data: data,
-          borderColor: '#3b82f6',
-          backgroundColor: 'rgba(59, 130, 246, 0.1)',
-          fill: true,
-          tension: 0.4
-        }]
-      },
-      options: { responsive: true, maintainAspectRatio: false }
+    // ✅ Préparation des données
+    const labels = timeEvolution.map(d => {
+      const date = new Date(d.timestamp);
+      return date.toLocaleTimeString('fr-FR', {
+        hour: '2-digit',
+        minute: '2-digit'
+      });
     });
+
+    const data = timeEvolution.map(d => d.avgAQI || 0);
+
+    console.log('📊 Données préparées:', { labels: labels.length, data: data.length });
+
+    // ✅ Détruire l'ancien graphique si existant
+    if (this.trendChart) {
+      console.log('🗑️ Destruction ancien graphique');
+      this.trendChart.destroy();
+      this.trendChart = undefined;
+    }
+
+    // ✅ Créer le nouveau graphique
+    try {
+      this.trendChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'AQI Moyen',
+            data: data,
+            borderColor: '#3b82f6',
+            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+            fill: true,
+            tension: 0.4,
+            pointRadius: 3,
+            pointHoverRadius: 6,
+            borderWidth: 2
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          animation: {
+            duration: 750
+          },
+          plugins: {
+            legend: {
+              display: false
+            },
+            tooltip: {
+              mode: 'index',
+              intersect: false,
+              backgroundColor: 'rgba(0, 0, 0, 0.8)',
+              titleColor: '#fff',
+              bodyColor: '#fff',
+              borderColor: '#3b82f6',
+              borderWidth: 1,
+              callbacks: {
+                label: function(context) {
+                  const value = context.parsed.y;
+                  return 'AQI: ' + Math.round(value ?? 0);
+                }
+              }
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              grid: {
+                color: 'rgba(0, 0, 0, 0.05)'
+              },
+              ticks: {
+                callback: function(value) {
+                  return Math.round((value as number) ?? 0) + ' AQI';
+                }
+              }
+            },
+            x: {
+              grid: {
+                display: false
+              },
+              ticks: {
+                maxRotation: 45,
+                minRotation: 45
+              }
+            }
+          }
+        }
+      });
+
+      console.log('✅ Graphique créé avec succès');
+    } catch (error) {
+      console.error('❌ Erreur création graphique:', error);
+    }
   }
 
-  private initMap(): void {
-    if (!this.mapContainer || this.sensors.length === 0 || this.map) return;
+  // ============================================
+  // AQI HELPERS
+  // ============================================
 
-    const defaultCoords: L.LatLngTuple = [14.7167, -17.4677];
-    this.map = L.map(this.mapContainer.nativeElement).setView(defaultCoords, 10);
-
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '© OpenStreetMap contributors'
-    } ).addTo(this.map);
-
-    this.sensors.forEach(sensor => {
-      if (sensor.coordinates?.lat && sensor.coordinates?.lng) {
-        const coords: L.LatLngTuple = [sensor.coordinates.lat, sensor.coordinates.lng];
-        const aqi = Math.round(sensor.airQualityIndex || 0);
-        let color = 'green';
-        if (aqi > 100) color = 'red';
-        else if (aqi > 50) color = 'orange';
-
-        const icon = L.divIcon({
-          className: `custom-map-icon icon-${color}`,
-          html: `<span>${aqi}</span>`,
-          iconSize: [30, 30]
-        });
-
-        L.marker(coords, { icon: icon })
-          .addTo(this.map!)
-          .bindPopup(`<b>${sensor.name}</b>  
-AQI: ${aqi}`);
-      }
-    });
+  getAQIClass(aqi: number): string {
+    if (aqi <= 50) return 'status-good';
+    if (aqi <= 100) return 'status-moderate';
+    if (aqi <= 150) return 'status-poor';
+    if (aqi <= 200) return 'status-unhealthy';
+    return 'status-critical';
   }
 
-  private handleError(err: any): void {
-    this.errorMessage = err.error?.message || 'Une erreur de communication est survenue.';
-    this.isLoading = false;
+  getAQILabel(aqi: number): string {
+    if (aqi <= 50) return 'Bon';
+    if (aqi <= 100) return 'Modéré';
+    if (aqi <= 150) return 'Mauvais pour groupes sensibles';
+    if (aqi <= 200) return 'Mauvais';
+    if (aqi <= 300) return 'Très mauvais';
+    return 'Dangereux';
   }
+
+  // ============================================
+  // WORST SENSORS EXTRACTION
+  // ============================================
+
+  extractWorstSensors(): void {
+    if (!this.dashboardData?.sensors || !Array.isArray(this.dashboardData.sensors)) return;
+
+    this.worstSensors = this.dashboardData.sensors
+      .filter((sensor: any) => sensor.currentAQI && sensor.currentAQI > 0)
+      .map((sensor: any) => ({
+        sensorId: sensor.sensorId || sensor.id,
+        name: sensor.locationName || sensor.name || sensor.sensorId,
+        location: sensor.city || 'Dakar',
+        currentAQI: sensor.currentAQI || 0
+      }))
+      .sort((a, b) => b.currentAQI - a.currentAQI)
+      .slice(0, 5);
+  }
+
+  updateWorstSensorsFromAPI(): void {
+    if (!this.sensors || this.sensors.length === 0) return;
+
+    this.worstSensors = this.sensors
+      .filter(sensor => sensor.airQualityIndex && sensor.airQualityIndex > 0)
+      .map(sensor => ({
+        sensorId: sensor.id,
+        name: sensor.name,
+        location: sensor.city || 'Dakar',
+        currentAQI: sensor.airQualityIndex || 0
+      }))
+      .sort((a, b) => b.currentAQI - a.currentAQI)
+      .slice(0, 5);
+  }
+
+  // ============================================
+  // NAVIGATION METHODS
+  // ============================================
+
+  navigateToAlerts(severity?: string): void {
+    if (severity) {
+      this.router.navigate(['/dashboard/alerts'], { queryParams: { severity: severity } });
+    } else {
+      this.router.navigate(['/dashboard/alerts']);
+    }
+  }
+
+  navigateToSensor(sensorId: string): void {
+    this.router.navigate(['/dashboard/sensors', sensorId]);
+  }
+
+  // ============================================
+  // CLEANUP
+  // ============================================
 
   ngOnDestroy(): void {
-    if (this.trendChart) this.trendChart.destroy();
-    if (this.map) this.map.remove();
+    if (this.trendChart) {
+      this.trendChart.destroy();
+      this.trendChart = undefined;
+    }
   }
 }

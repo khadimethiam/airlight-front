@@ -15,17 +15,37 @@
 
 .dashboard-main-content {
   flex-grow: 1;
-  padding: 2rem;
   overflow-y: auto;
 }
 
+/* Desktop : Padding normal + espace pour sidebar réduite */
+@media (min-width: 769px) {
+  .dashboard-main-content {
+    margin-left: 10px; /* Espace pour la sidebar réduite (70px) */
+    padding: 2rem;
+  }
+}
 
-/* Pour les petits écrans, on pourrait ajuster la mise en page */
+/* Mobile : Padding-top pour le bouton hamburger */
 @media (max-width: 768px) {
   .dashboard-layout {
     flex-direction: column;
   }
+
   .dashboard-main-content {
+    margin-left: 0; /* Pas d'espace sur mobile (sidebar en overlay) */
     padding: 1rem;
+    padding-top: 4.5rem; /* ✅ 72px pour le bouton hamburger (44px + marges) */
+  }
+
+  /* Retirer les marges par défaut des premiers éléments */
+  .dashboard-main-content > *:first-child {
+    margin-top: 0 !important;
+  }
+
+  /* Les titres commencent sans marge supplémentaire */
+  .dashboard-main-content h1:first-child,
+  .dashboard-main-content .display-5:first-child {
+    margin-top: 0 !important;
   }
 }

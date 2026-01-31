@@ -9,68 +9,152 @@
     <div class="row justify-content-center">
       <div class="col-lg-10">
         <!-- Chargement -->
-        <div *ngIf="isLoading" class="text-center">
-          <div class="spinner-border text-primary" role="status">
-            <span class="visually-hidden">Loading...</span>
+        <div *ngIf="isLoading" class="text-center py-5">
+          <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+            <span class="visually-hidden">Chargement...</span>
           </div>
-          <p class="mt-2">Chargement des données météo...</p>
+          <p class="mt-3 text-muted">Chargement des données météo...</p>
         </div>
 
         <!-- Erreur -->
         <div *ngIf="hasError" class="alert alert-danger text-center">
           <i class="fas fa-exclamation-triangle me-2"></i>
           Impossible de charger les données météo pour le moment.
+          <button class="btn btn-sm btn-outline-danger ms-3" (click)="refresh()">
+            <i class="fas fa-redo me-1"></i> Réessayer
+          </button>
         </div>
 
         <!-- Données météo -->
         <div *ngIf="!isLoading && !hasError && weatherData" class="row g-4 align-items-stretch">
-          <!-- Carte principale -->
+          
+          <!-- Carte principale météo -->
           <div class="col-lg-6 d-flex">
-            <div class="card card-hover weather-main-card flex-fill p-4 text-white">
-              <div class="d-flex justify-content-between align-items-start">
+            <div class="card card-hover weather-main-card flex-fill p-4 text-white position-relative">
+              
+              <!-- Header avec température et icône -->
+              <div class="d-flex justify-content-between align-items-start mb-4">
                 <div>
-                  <h3 class="display-5 fw-bold">{{ weatherData.temperature }}°C</h3>
-                  <p class="lead mb-0">{{ weatherData.location }}</p>
+                  <h3 class="display-3 fw-bold mb-2">{{ weatherData.temperature }}°C</h3>
+                  <p class="h5 mb-1 opacity-90">{{ weatherData.location }}</p>
+                  <p class="mb-0 opacity-75">
+                    <i class="fas fa-thermometer-half me-2"></i>
+                    Ressenti {{ weatherData.feelsLike }}°C
+                  </p>
                 </div>
-                <i [class]="weatherData.iconClass" class="weather-icon fa-3x opacity-75"></i>
+                
+                <!-- Icône météo OpenWeather -->
+                <div class="weather-icon-container">
+                  <img 
+                    *ngIf="weatherData.iconUrl" 
+                    [src]="weatherData.iconUrl" 
+                    [alt]="weatherData.description"
+                    class="weather-icon-img"
+                  />
+                  <i 
+                    *ngIf="!weatherData.iconUrl" 
+                    [class]="weatherData.iconClass" 
+                    class="weather-icon fa-4x"
+                  ></i>
+                </div>
               </div>
-              <div class="mt-4">
-                <p class="fs-5 fw-medium mb-2">{{ weatherData.description }}</p>
-                <div class="row text-white-50">
-                  <div class="col-6">
-                    <i class="fas fa-eye me-2"></i>UV: {{ weatherData.uvIndex }}
+              
+              <!-- Description -->
+              <div class="mb-4">
+                <p class="fs-4 fw-medium mb-0">
+                  <i class="fas fa-cloud me-2"></i>
+                  {{ weatherData.description }}
+                </p>
+              </div>
+
+              <!-- Détails en grille -->
+              <div class="row g-3 mb-3">
+                <div class="col-6">
+                  <div class="weather-detail-item">
+                    <i class="fas fa-eye me-2"></i>
+                    <span class="small opacity-75">Visibilité</span>
+                    <p class="mb-0 fw-bold">{{ weatherData.visibility }} km</p>
                   </div>
-                  <div class="col-6">
-                    <i class="fas fa-tint me-2"></i>{{ weatherData.humidity }}%
+                </div>
+                <div class="col-6">
+                  <div class="weather-detail-item">
+                    <i class="fas fa-tint me-2"></i>
+                    <span class="small opacity-75">Humidité</span>
+                    <p class="mb-0 fw-bold">{{ weatherData.humidity }}%</p>
+                  </div>
+                </div>
+                <div class="col-6">
+                  <div class="weather-detail-item">
+                    <i class="fas fa-wind me-2"></i>
+                    <span class="small opacity-75">Vent</span>
+                    <p class="mb-0 fw-bold">{{ weatherData.windSpeed }} km/h</p>
+                  </div>
+                </div>
+                <div class="col-6">
+                  <div class="weather-detail-item">
+                    <i class="fas fa-tachometer-alt me-2"></i>
+                    <span class="small opacity-75">Pression</span>
+                    <p class="mb-0 fw-bold">{{ weatherData.pressure }} hPa</p>
                   </div>
                 </div>
               </div>
+
+              <!-- Bouton rafraîchir -->
+              <button 
+                class="btn btn-light btn-sm mt-auto align-self-start"
+                (click)="refresh()"
+              >
+                <i class="fas fa-sync-alt me-1"></i> Actualiser
+              </button>
+
             </div>
           </div>
 
-          <!-- Cartes secondaires -->
+          <!-- Cartes secondaires (informations supplémentaires) -->
           <div class="col-lg-6 d-flex flex-column">
             <div class="row g-4 flex-fill">
-              <div class="col-12 col-md-6 d-flex">
-                <div class="card card-hover flex-fill p-4 text-center">
-                  <i class="fas fa-wind text-primary fa-2x mb-3"></i>
-                  <h4 class="h6 text-muted">Vent</h4>
-                  <p class="fs-4 fw-bold text-dark mb-0">
-                    {{ weatherData.windSpeed }} km/h
-                  </p>
+              
+              <!-- Carte Vent détaillé -->
+              <div class="col-12 d-flex">
+                <div class="card card-hover flex-fill p-4">
+                  <div class="d-flex align-items-center mb-3">
+                    <div class="icon-circle bg-primary bg-opacity-10 me-3">
+                      <i class="fas fa-wind text-primary fa-2x"></i>
+                    </div>
+                    <div>
+                      <h4 class="h6 text-muted mb-1">Vitesse du Vent</h4>
+                      <p class="fs-2 fw-bold text-dark mb-0">{{ weatherData.windSpeed }} <small class="fs-6 text-muted">km/h</small></p>
+                    </div>
+                  </div>
+                  <div class="d-flex justify-content-between text-muted small">
+                    <span><i class="fas fa-arrow-up me-1"></i> Direction</span>
+                    <span class="fw-bold">Nord-Est</span>
+                  </div>
                 </div>
               </div>
-              <div class="col-12 col-md-6 d-flex">
-                <div class="card card-hover flex-fill p-4 text-center">
-                  <i class="fas fa-thermometer-half text-success fa-2x mb-3"></i>
-                  <h4 class="h6 text-muted">Pression</h4>
-                  <p class="fs-4 fw-bold text-dark mb-0">
-                    {{ weatherData.pressure }} hPa
-                  </p>
+
+              <!-- Carte Pression atmosphérique -->
+              <div class="col-12 d-flex">
+                <div class="card card-hover flex-fill p-4">
+                  <div class="d-flex align-items-center mb-3">
+                    <div class="icon-circle bg-success bg-opacity-10 me-3">
+                      <i class="fas fa-tachometer-alt text-success fa-2x"></i>
+                    </div>
+                    <div>
+                      <h4 class="h6 text-muted mb-1">Pression Atmosphérique</h4>
+                      <p class="fs-2 fw-bold text-dark mb-0">{{ weatherData.pressure }} <small class="fs-6 text-muted">hPa</small></p>
+                    </div>
+                  </div>
+                  <div class="d-flex justify-content-between text-muted small">
+                    <span><i class="fas fa-chart-line me-1"></i> Tendance</span>
+                    <span class="fw-bold text-success">Stable</span>
+                  </div>
                 </div>
               </div>
+
             </div>
           </div>
+
         </div>
 
       </div>

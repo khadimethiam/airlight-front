@@ -37,20 +37,45 @@
       <div *ngIf="errorMessage" class="alert alert-danger">{{ errorMessage }}</div>
       <div *ngIf="successMessage" class="alert alert-success">{{ successMessage }}</div>
 
+      <!-- Conteneur de chargement -->
+      <div *ngIf="isLoading" class="text-center py-3">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Chargement...</span>
+        </div>
+      </div>
+
       <!-- Contenu des onglets -->
-      <div class="tab-content">
+      <div class="tab-content" [class.opacity-50]="isLoading">
         <!-- Formulaire de connexion -->
         <div *ngIf="isLoginView">
           <form [formGroup]="loginForm" (ngSubmit)="onLogin()">
             <div class="mb-3">
               <label for="loginEmail" class="form-label">Email</label>
-              <input type="email" class="form-control p-2" id="loginEmail" placeholder="votre@email.com" formControlName="email">
+              <input type="email" class="form-control p-2" id="loginEmail" placeholder="votre@email.com" formControlName="email" [disabled]="isLoading">
             </div>
+            
+            <!-- ✅ Champ mot de passe avec œil -->
             <div class="mb-3">
               <label for="loginPassword" class="form-label">Mot de passe</label>
-              <input type="password" class="form-control p-2" id="loginPassword" placeholder="••••••••" formControlName="password">
+              <div class="password-input-wrapper position-relative">
+                <input 
+                  [type]="showLoginPassword ? 'text' : 'password'" 
+                  class="form-control p-2 pe-5" 
+                  id="loginPassword" 
+                  placeholder="••••••••" 
+                  formControlName="password"
+                  [disabled]="isLoading">
+                <button 
+                  type="button" 
+                  class="btn btn-link password-toggle-btn position-absolute top-50 end-0 translate-middle-y"
+                  (click)="toggleLoginPassword()"
+                  tabindex="-1">
+                  <i [class]="showLoginPassword ? 'fas fa-eye-slash' : 'fas fa-eye'" class="text-muted"></i>
+                </button>
+              </div>
             </div>
-            <button type="submit" class="btn btn-primary w-100 p-2 fw-bold text-white mt-3" [disabled]="loginForm.invalid">
+
+            <button type="submit" class="btn btn-primary w-100 p-2 fw-bold text-white mt-3" [disabled]="loginForm.invalid || isLoading">
               <i class="fas fa-sign-in-alt me-2"></i>Se connecter
             </button>
           </form>
@@ -62,26 +87,71 @@
             <div class="row g-3 mb-3">
               <div class="col">
                 <label for="firstName" class="form-label">Prénom</label>
-                <input type="text" class="form-control p-2" id="firstName" placeholder="Jean" formControlName="firstName">
+                <input type="text" class="form-control p-2" id="firstName" placeholder="Jean" formControlName="firstName" [disabled]="isLoading">
               </div>
               <div class="col">
                 <label for="lastName" class="form-label">Nom</label>
-                <input type="text" class="form-control p-2" id="lastName" placeholder="Dupont" formControlName="lastName">
+                <input type="text" class="form-control p-2" id="lastName" placeholder="Dupont" formControlName="lastName" [disabled]="isLoading">
               </div>
             </div>
             <div class="mb-3">
               <label for="registerEmail" class="form-label">Email</label>
-              <input type="email" class="form-control p-2" id="registerEmail" placeholder="votre@email.com" formControlName="email">
+              <input type="email" class="form-control p-2" id="registerEmail" placeholder="votre@email.com" formControlName="email" [disabled]="isLoading">
             </div>
+            
+            <!-- ✅ Champ mot de passe avec œil -->
             <div class="mb-3">
               <label for="registerPassword" class="form-label">Mot de passe</label>
-              <input type="password" class="form-control p-2" id="registerPassword" placeholder="Minimum 8 caractères" formControlName="password">
+              <div class="password-input-wrapper position-relative">
+                <input 
+                  [type]="showRegisterPassword ? 'text' : 'password'" 
+                  class="form-control p-2 pe-5" 
+                  id="registerPassword" 
+                  placeholder="Minimum 8 caractères" 
+                  formControlName="password"
+                  [disabled]="isLoading">
+                <button 
+                  type="button" 
+                  class="btn btn-link password-toggle-btn position-absolute top-50 end-0 translate-middle-y"
+                  (click)="toggleRegisterPassword()"
+                  tabindex="-1">
+                  <i [class]="showRegisterPassword ? 'fas fa-eye-slash' : 'fas fa-eye'" class="text-muted"></i>
+                </button>
+              </div>
             </div>
+            
+            <!-- ✅ Champ confirmation mot de passe avec œil -->
             <div class="mb-3">
               <label for="confirmPassword" class="form-label">Confirmer le mot de passe</label>
-              <input type="password" class="form-control p-2" id="confirmPassword" placeholder="••••••••" formControlName="confirmPassword">
+              <div class="password-input-wrapper position-relative">
+                <input 
+                  [type]="showConfirmPassword ? 'text' : 'password'" 
+                  class="form-control p-2 pe-5" 
+                  id="confirmPassword" 
+                  placeholder="••••••••" 
+                  formControlName="confirmPassword"
+                  [disabled]="isLoading">
+                <button 
+                  type="button" 
+                  class="btn btn-link password-toggle-btn position-absolute top-50 end-0 translate-middle-y"
+                  (click)="toggleConfirmPassword()"
+                  tabindex="-1">
+                  <i [class]="showConfirmPassword ? 'fas fa-eye-slash' : 'fas fa-eye'" class="text-muted"></i>
+                </button>
+              </div>
+              
+              <!-- ✅ Validation visuelle des mots de passe -->
+              <div *ngIf="registerForm.get('confirmPassword')?.value" class="mt-2">
+                <small 
+                  [class.text-success]="registerForm.value.password === registerForm.value.confirmPassword && registerForm.value.confirmPassword"
+                  [class.text-danger]="registerForm.value.password !== registerForm.value.confirmPassword">
+                  <i [class]="registerForm.value.password === registerForm.value.confirmPassword ? 'fas fa-check-circle' : 'fas fa-times-circle'"></i>
+                  {{ registerForm.value.password === registerForm.value.confirmPassword ? 'Les mots de passe correspondent' : 'Les mots de passe ne correspondent pas' }}
+                </small>
+              </div>
             </div>
-            <button type="submit" class="btn btn-primary w-100 p-2 fw-bold text-white mt-3" [disabled]="registerForm.invalid">
+
+            <button type="submit" class="btn btn-primary w-100 p-2 fw-bold text-white mt-3" [disabled]="registerForm.invalid || isLoading">
               <i class="fas fa-user-plus me-2"></i>S'inscrire
             </button>
           </form>
@@ -95,7 +165,7 @@
         </div>
 
         <!-- Bouton Google -->
-        <button type="button" class="btn btn-google w-100 p-2 fw-bold bg-white" (click)="onGoogleAuth()">
+        <button type="button" class="btn btn-google w-100 p-2 fw-bold bg-white" (click)="onGoogleAuth()" [disabled]="isLoading">
           <img src="https://www.google.com/favicon.ico" alt="Google icon" class="me-2" style="width: 20px; height: 20px;">
           Continuer avec Google
         </button>

@@ -1,204 +1,532 @@
+/* ========================================
+   CARTE PRINCIPALE
+   ======================================== */
 .status-card {
   background-color: #fff;
   border-radius: 1rem;
-  overflow: hidden;
+  border: none;
 }
 
-.border-end-md {
-  border-right: 1px solid #dee2e6;
+.h-100 {
+  height: 100% !important;
 }
 
-.aqi-value {
-  font-size: 4.5rem;
+/* ========================================
+   ✅ SÉLECTEUR DE CAPTEUR
+   ======================================== */
+.sensor-selector-container {
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+/* Wrapper du select personnalisé */
+.custom-select-wrapper {
+  position: relative;
+  flex: 1;
+  max-width: 400px;
+  min-width: 250px;
+}
+
+.select-icon {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #667eea;
+  font-size: 1rem;
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* Select personnalisé */
+.custom-sensor-select {
+  padding: 0.75rem 1rem 0.75rem 2.75rem;
+  border: 2px solid #e9ecef;
+  border-radius: 2rem;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #495057;
+  background-color: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23667eea' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  padding-right: 3rem;
+}
+
+.custom-sensor-select:hover:not(:disabled) {
+  border-color: #667eea;
+  box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.1);
+}
+
+.custom-sensor-select:focus {
+  border-color: #667eea;
+  box-shadow: 0 0 0 0.25rem rgba(102, 126, 234, 0.2);
+  outline: none;
+}
+
+.custom-sensor-select:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background-color: #f8f9fa;
+}
+
+/* Options du select */
+.custom-sensor-select optgroup {
+  font-weight: 700;
+  color: #667eea;
+  font-size: 0.9rem;
+  padding-top: 0.5rem;
+}
+
+.custom-sensor-select option {
+  padding: 0.5rem;
+  font-weight: 500;
+}
+
+/* Bouton géolocalisation */
+.btn-geolocation {
+  padding: 0.75rem 1.5rem;
+  border-radius: 2rem;
+  border: 2px solid #667eea;
+  background: white;
+  color: #667eea;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.btn-geolocation:hover:not(:disabled) {
+  background: #667eea;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.btn-geolocation:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ========================================
+   ✅ SECTION GÉOLOCALISATION COMPACTE
+   ======================================== */
+
+/* Nom du capteur inline dans le titre */
+.sensor-name-inline {
+  color: #278927;
+  font-size: 1.3rem;
+}
+
+/* Container des informations inline */
+.sensor-info-inline {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-top: 0.5rem;
+}
+
+/* Pills compactes */
+.info-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.9rem;
+  border-radius: 1.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  color: #495057;
+  transition: all 0.2s ease;
+}
+
+.info-pill:hover {
+  background: #e9ecef;
+  transform: translateY(-1px);
+}
+
+.info-pill i {
+  font-size: 0.875rem;
+}
+
+/* Variantes de couleur */
+.info-pill.distance {
+  background: #d1fae5;
+  border-color: #6ee7b7;
+  color: #047857;
+}
+
+.info-pill.success {
+  background: #dbeafe;
+  border-color: #93c5fd;
+  color: #1e40af;
+}
+
+.info-pill.manual {
+  background: #fef3c7;
+  border-color: #fcd34d;
+  color: #92400e;
+}
+
+/* Bouton actualiser compact */
+.btn-refresh-compact {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid #667eea;
+  background: white;
+  color: #667eea;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  flex-shrink: 0;
+}
+
+.btn-refresh-compact:hover:not(:disabled) {
+  background: #667eea;
+  color: white;
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.btn-refresh-compact:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-refresh-compact i {
+  font-size: 0.9rem;
+}
+
+/* Alerte compacte */
+.alert-sm {
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  border-radius: 0.5rem;
+  display: inline-block;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* ========================================
+   AQI (QUALITÉ DE L'AIR)
+   ======================================== */
+.aqi-value-large {
+  font-size: 4rem;
   font-weight: 800;
   line-height: 1;
 }
 
-.aqi-level {
+.aqi-level-large {
   font-size: 1.5rem;
   font-weight: 700;
 }
 
-.pollutant-label {
-  font-size: 0.9rem;
+.aqi-subtitle {
+  font-size: 0.875rem;
   color: #6c757d;
+}
+
+.card-title-aqi {
+  color: #212529;
+}
+
+/* Boîtes de polluants avec bordure */
+.pollutant-box {
+  background: #f8f9fa;
+  border: 2px solid #e9ecef;
+  border-radius: 0.75rem;
+  padding: 1rem;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.pollutant-box:hover {
+  border-color: #dee2e6;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.pollutant-label {
+  font-size: 0.85rem;
+  color: #6c757d;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .pollutant-value {
-  font-size: 1.25rem;
-  font-weight: 600;
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #212529;
 }
 
 .unit {
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   color: #6c757d;
+  font-weight: 400;
 }
 
-.weather-icon {
-  width: 64px;
-  height: 64px;
-}
-
-.weather-temp {
-  font-size: 2rem;
-  font-weight: 700;
-}
-
-.weather-desc {
-  text-transform: capitalize;
-  color: #6c757d;
-}
-
-.weather-info {
-  font-size: 0.9rem;
-}
-
-/* Couleurs de statut */
+/* Couleurs de statut - 6 NIVEAUX */
 .status-good { color: #198754; }
-.status-moderate { color: #ffc107; }
-.status-unhealthy { color: #fd7e14; }
-.status-hazardous { color: #dc3545; }
+.status-moderate { color: #ffe600; }
+.status-sensitive { color: #ff7e00; }
+.status-unhealthy { color: #ff0000; }
+.status-very-unhealthy { color: #8f3f97; }
+.status-hazardous { color: #654321; }
 
-@media (max-width: 767.98px) {
-  .border-end-md {
-    border-right: none;
-    border-bottom: 1px solid #dee2e6;
-  }
-}
-/* src/app/components/current-status/current-status.css */
-
-/* ... (styles existants pour .status-card, .aqi-value, etc.) ... */
-
-
-/* --- NOUVEAUX STYLES POUR LA BARRE DE JAUGE --- */
-
+/* ========================================
+   JAUGE AQI
+   ======================================== */
 .aqi-gauge-container {
   position: relative;
   width: 100%;
-  padding-top: 10px; /* Espace pour le curseur */
+  padding-top: 15px;
+  margin-top: 1rem;
 }
 
-/* La barre de fond avec le dégradé de couleurs */
 .aqi-gauge-bar {
   width: 100%;
-  height: 8px;
-  border-radius: 4px;
-  background: linear-gradient(to right, 
-    #198754 0%,     /* Vert (Bon) */
-    #ffc107 25%,    /* Jaune (Modéré) */
-    #fd7e14 50%,    /* Orange (Mauvais) */
-    #dc3545 75%,    /* Rouge (Dangereux) */
-    #842029 100%    /* Rouge foncé (Très Dangereux) */
+  height: 10px;
+  border-radius: 5px;
+  background: linear-gradient(to right,
+    #198754 0%,
+    #ffe600 16.67%,
+    #ff7e00 33.33%,
+    #ff0000 50%,
+    #8f3f97 66.67%,
+    #654321 83.33%,
+    #3d2817 100%
   );
 }
 
-/* Le curseur qui indique la valeur actuelle */
 .aqi-gauge-cursor {
   position: absolute;
-  top: 0;
-  transform: translateX(-50%); /* Centre le curseur sur sa position */
-  width: 12px;
-  height: 12px;
+  top: 5px;
+  transform: translateX(-50%);
+  width: 16px;
+  height: 16px;
   background-color: #fff;
-  border: 2px solid #0d6efd; /* Bordure bleue pour le faire ressortir */
+  border: 3px solid #0d6efd;
   border-radius: 50%;
-  transition: left 0.5s ease-in-out; /* Animation douce */
-  box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+  transition: left 0.5s ease-in-out;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  z-index: 10;
 }
 
-/* Le petit triangle sous le curseur */
 .aqi-gauge-cursor-triangle {
   position: absolute;
-  bottom: -8px; /* Positionné juste en dessous du cercle */
+  bottom: -10px;
   left: 50%;
   transform: translateX(-50%);
   width: 0;
   height: 0;
-  border-left: 6px solid transparent;
-  border-right: 6px solid transparent;
-  border-top: 6px solid #0d6efd; /* Même couleur que la bordure */
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-top: 8px solid #0d6efd;
 }
 
-/* Le conteneur pour les étiquettes (Bon, Modéré, etc.) */
 .aqi-gauge-labels {
   display: flex;
   justify-content: space-between;
-  margin-top: 8px;
-  font-size: 0.75rem;
+  margin-top: 12px;
+  font-size: 0.65rem;
   color: #6c757d;
+  font-weight: 500;
 }
+
+.aqi-gauge-labels span {
+  flex: 1;
+  text-align: center;
+}
+
+/* ========================================
+   SECTION MÉTÉO
+   ======================================== */
 .weather-section {
   transition: background 0.5s ease-in-out;
-  color: #fff; /* Texte blanc par défaut pour les fonds sombres */
+  color: #fff;
+  border: none !important;
 }
 
-/* On s'assure que les titres et icônes sont bien visibles */
 .weather-section h3,
 .weather-section .weather-temp,
-.weather-section .weather-desc,
-.weather-section .weather-info {
+.weather-section .weather-desc {
   color: #fff;
-  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2); /* Ombre pour la lisibilité */
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
 }
 
-/* Ciel clair - Jour */
+.weather-icon-wrapper {
+  width: 90px;
+  height: 90px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  backdrop-filter: blur(10px);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.weather-icon-wrapper i {
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+}
+
+.weather-temp {
+  font-size: 2.5rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.weather-desc {
+  text-transform: capitalize;
+  font-size: 1.1rem;
+  opacity: 0.9;
+}
+
+.weather-detail-box {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  text-align: center;
+}
+
+.weather-detail-box i {
+  font-size: 1.2rem;
+}
+
+/* ========================================
+   BACKGROUNDS MÉTÉO
+   ======================================== */
 .weather-bg-clear-day {
   background: linear-gradient(135deg, #87CEEB, #4682B4);
 }
 
-/* Ciel clair - Nuit */
 .weather-bg-clear-night {
   background: linear-gradient(135deg, #2c3e50, #465875);
 }
 
-/* Nuageux - Jour */
 .weather-bg-cloudy-day {
   background: linear-gradient(135deg, #bdc3c7, #95a5a6);
 }
+
 .weather-bg-cloudy-day h3,
 .weather-bg-cloudy-day .weather-temp,
-.weather-bg-cloudy-day .weather-desc,
-.weather-bg-cloudy-day .weather-info {
-  color: #2c3e50; /* Texte foncé pour fond clair */
+.weather-bg-cloudy-day .weather-desc {
+  color: #2c3e50;
   text-shadow: none;
 }
 
-/* Nuageux - Nuit */
 .weather-bg-cloudy-night {
   background: linear-gradient(135deg, #7f8c8d, #596275);
 }
 
-/* Pluie */
 .weather-bg-rain {
   background: linear-gradient(135deg, #34495e, #5d6d7e);
 }
 
-/* Orage */
 .weather-bg-thunderstorm {
   background: linear-gradient(135deg, #2c3e50, #34495e);
 }
 
-/* Neige */
 .weather-bg-snow {
   background: linear-gradient(135deg, #e0eafc, #cfdef3);
-  color: #333; /* Texte foncé pour fond clair */
 }
+
 .weather-bg-snow h3,
 .weather-bg-snow .weather-temp,
-.weather-bg-snow .weather-desc,
-.weather-bg-snow .weather-info {
+.weather-bg-snow .weather-desc {
   color: #333;
   text-shadow: none;
 }
 
-/* Brume / Poussière (Harmattan) */
 .weather-bg-mist {
   background: linear-gradient(135deg, #d7ccc8, #bcaaa4);
 }
+
 .weather-bg-mist h3,
 .weather-bg-mist .weather-temp,
-.weather-bg-mist .weather-desc,
-.weather-bg-mist .weather-info {
-  color: #4e342e; /* Texte brun foncé pour fond sable */
+.weather-bg-mist .weather-desc {
+  color: #4e342e;
   text-shadow: none;
+}
+
+/* ========================================
+   RESPONSIVE
+   ======================================== */
+@media (max-width: 767.98px) {
+  .aqi-value-large {
+    font-size: 3rem;
+  }
+
+  .weather-temp {
+    font-size: 2rem;
+  }
+
+  .weather-icon-wrapper {
+    width: 70px;
+    height: 70px;
+  }
+
+  .sensor-name-inline {
+    display: block;
+    margin-top: 0.5rem;
+    font-size: 1.1rem;
+  }
+
+  .sensor-info-inline {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .info-pill {
+    width: 100%;
+    justify-content: center;
+  }
+
+  /* Sélecteur responsive */
+  .sensor-selector-container .d-flex {
+    flex-direction: column;
+  }
+
+  .custom-select-wrapper {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .btn-geolocation {
+    width: 100%;
+  }
+
+  .custom-sensor-select {
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 575.98px) {
+  .aqi-gauge-labels {
+    font-size: 0.55rem;
+  }
+
+  .custom-sensor-select {
+    padding-left: 2.5rem;
+    font-size: 0.85rem;
+  }
+
+  .select-icon {
+    left: 0.75rem;
+    font-size: 0.9rem;
+  }
 }

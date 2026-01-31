@@ -1,17 +1,30 @@
-/* src/app/pages/dashboard-overview/dashboard-overview.css */
+/* src/app/pages/dashboard-overview/dashboard-overview.css - AVEC LOADER */
+
+/* ================================================ */
+/* STATS CARDS (KPIs principaux) */
+/* ================================================ */
 
 .stats-card {
   background-color: #ffffff;
-  border-radius: 1rem; /* Bords plus arrondis */
+  border-radius: 1rem;
   padding: 1.5rem;
   box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   border: 1px solid #e5e7eb;
+  height: 100%;
 }
 
 .stats-card:hover {
   transform: translateY(-5px);
   box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+}
+
+.stats-card.clickable {
+  cursor: pointer;
+}
+
+.stats-card.clickable:active {
+  transform: translateY(-2px);
 }
 
 .stats-card-content {
@@ -21,24 +34,36 @@
 }
 
 .stats-card-info .label {
-  color: #6b7280; /* Gris */
+  color: #6b7280;
   font-size: 0.875rem;
   margin-bottom: 0.25rem;
+  font-weight: 500;
 }
 
 .stats-card-info .value {
-  font-size: 1.875rem; /* 30px */
+  font-size: 2rem;
   font-weight: 700;
-  color: #1f2937; /* Texte sombre */
+  color: #1f2937;
+  margin: 0.5rem 0;
+}
+
+.stats-card-info .sublabel {
+  color: #9ca3af;
+  font-size: 0.75rem;
+  margin: 0;
 }
 
 .stats-card-icon {
-  font-size: 2rem; /* Icône plus grande */
-  opacity: 0.8;
+  font-size: 2.5rem;
+  opacity: 0.7;
 }
 
-/* Couleurs spécifiques pour les icônes et les valeurs */
+/* Couleurs spécifiques pour les icônes et valeurs */
 .status-good { color: #10b981; }
+.status-moderate { color: #3b82f6; }
+.status-poor { color: #f59e0b; }
+.status-unhealthy { color: #ef4444; }
+.status-critical { color: #dc2626; }
 .status-sensors { color: #3b82f6; }
 .status-alerts { color: #f59e0b; }
 .status-prediction { color: #8b5cf6; }
@@ -49,27 +74,170 @@
 
 @keyframes pulse {
   0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.7; transform: scale(1.1); }
+  50% { opacity: 0.7; transform: scale(1.15); }
 }
 
-.map-container {
-  height: 100%;
-  min-height: 350px; /* Hauteur minimale pour la carte */
-  border-radius: 0.75rem;
+/* ================================================ */
+/* ✅ CHART LOADER (NOUVEAU) */
+/* ================================================ */
+
+.chart-loader {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.9);
+  z-index: 10;
+  border-radius: 0.5rem;
 }
-/* Styles pour les marqueurs de carte personnalisés */
-.custom-map-icon {
-  background-color: white;
+
+.chart-loader p {
+  color: #6b7280;
+  font-size: 0.875rem;
+  margin: 0;
+}
+
+canvas.chart-loading {
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+
+
+/* ================================================ */
+/* WORST SENSORS LIST (Top capteurs à surveiller) */
+/* ================================================ */
+
+.worst-sensors-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.worst-sensor-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  background: #f9fafb;
+  border-radius: 0.75rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 1px solid #e5e7eb;
+}
+
+.worst-sensor-item:hover {
+  background: #f3f4f6;
+  transform: translateX(5px);
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+}
+
+.worst-sensor-rank {
+  width: 32px;
+  height: 32px;
+  background: #3b82f6;
+  color: white;
   border-radius: 50%;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: bold;
-  font-size: 12px;
-  border: 2px solid white;
+  font-weight: 700;
+  font-size: 0.875rem;
+  flex-shrink: 0;
 }
 
-.custom-map-icon.icon-green { border-color: #10b981; color: #10b981; }
-.custom-map-icon.icon-orange { border-color: #f59e0b; color: #f59e0b; }
-.custom-map-icon.icon-red { border-color: #ef4444; color: #ef4444; }
+.worst-sensor-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.worst-sensor-name {
+  font-weight: 600;
+  color: #1f2937;
+  font-size: 0.875rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.worst-sensor-location {
+  font-size: 0.75rem;
+  color: #6b7280;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.worst-sensor-aqi {
+  font-size: 1.5rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+/* ================================================ */
+/* RESPONSIVE ADJUSTMENTS */
+/* ================================================ */
+
+@media (max-width: 768px) {
+  .stats-card-info .value {
+    font-size: 1.5rem;
+  }
+
+  .stats-card-icon {
+    font-size: 2rem;
+  }
+
+  .alert-summary-count {
+    font-size: 1.5rem;
+  }
+
+  .worst-sensor-item {
+    padding: 0.75rem;
+  }
+
+  .worst-sensor-aqi {
+    font-size: 1.25rem;
+  }
+}
+
+/* ================================================ */
+/* BUTTON GROUP CHART PERIOD SELECTOR */
+/* ================================================ */
+
+.btn-group-sm .btn {
+  font-size: 0.75rem;
+  padding: 0.25rem 0.75rem;
+}
+
+.btn-outline-secondary.active {
+  background-color: #3b82f6;
+  border-color: #3b82f6;
+  color: white;
+}
+
+.btn-outline-secondary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ================================================ */
+/* UTILITIES */
+/* ================================================ */
+
+.card {
+  border: none;
+}
+
+.card-title {
+  color: #1f2937;
+  font-weight: 600;
+}
+
+.text-muted {
+  color: #6b7280 !important;
+}

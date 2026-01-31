@@ -12,6 +12,10 @@ export interface WeatherResponse {
     location: {
       name: string;
       country: string;
+      coordinates: {
+        lat: number;
+        lon: number;
+      };
     };
     current: {
       timestamp: string;
@@ -23,29 +27,77 @@ export interface WeatherResponse {
         main: string;
         description: string;
         icon: string;
-        iconUrl: string; // Nous allons l'ajouter
       };
       wind: {
+        speed: number;
         speed_kmh: number;
+        direction: number;
       };
     };
+    airQualityImpact?: {
+      overall: string;
+      score: number;
+      factors: string[];
+    };
+  };
+  message: string;
+}
+
+// ✅ Interface pour les prévisions
+export interface ForecastResponse {
+  success: boolean;
+  data: {
+    location: {
+      name: string;
+      country: string;
+    };
+    daily: Array<{
+      date: string;
+      temperature: {
+        min: number;
+        max: number;
+        avg: number;
+      };
+      humidity: {
+        avg: number;
+      };
+      wind: {
+        avg_speed: number;
+        max_speed: number;
+      };
+      weather: string;
+    }>;
+  };
+  message: string;
+}
+
+// ✅ Interface pour météo de toutes les villes
+export interface CitiesWeatherResponse {
+  success: boolean;
+  data: Array<{
+    city: string;
+    success: boolean;
+    data: WeatherResponse['data'] | null;
+    error: string | null;
+  }>;
+  summary: {
+    total: number;
+    successful: number;
+    failed: number;
   };
   message: string;
 }
 
 @Injectable({
   providedIn: 'root'
-} )
+})
 export class WeatherService {
-  private apiUrl = 'http://localhost:3000/weather'; // L'URL de base de votre API météo
+  private apiUrl = 'http://localhost:3000/weather';
 
-  constructor(private http: HttpClient ) { }
+  constructor(private http: HttpClient) { }
 
   /**
-   * Récupère la météo actuelle pour une ville ou des coordonnées.
-   * @param city Le nom de la ville (ex: 'Dakar')
-   * @param lat Latitude
-   * @param lon Longitude
+   * Récupère la météo actuelle pour une ville ou des coordonnées
    */
   getCurrentWeather(city?: string, lat?: number, lon?: number): Observable<WeatherResponse> {
     let params = new HttpParams();
@@ -56,18 +108,59 @@ export class WeatherService {
       params = params.set('lat', lat.toString()).set('lon', lon.toString());
     }
 
-    return this.http.get<WeatherResponse>(`${this.apiUrl}/current`, { params } ).pipe(
+    return this.http.get<WeatherResponse>(`${this.apiUrl}/current`, { params }).pipe(
       catchError(this.handleError<WeatherResponse>('getCurrentWeather'))
     );
   }
 
   /**
-   * Gère les erreurs des appels HTTP et retourne un résultat sûr.
+   * ✅ NOUVEAU : Récupère les prévisions météo
+   */
+  getForecast(city?: string, lat?: number, lon?: number, days: number = 5): Observable<ForecastResponse> {
+    let params = new HttpParams().set('days', days.toString());
+    if (city) {
+      params = params.set('city', city);
+    }
+    if (lat && lon) {
+      params = params.set('lat', lat.toString()).set('lon', lon.toString());
+    }
+
+    return this.http.get<ForecastResponse>(`${this.apiUrl}/forecast`, { params }).pipe(
+      catchError(this.handleError<ForecastResponse>('getForecast'))
+    );
+  }
+
+  /**
+   * ✅ NOUVEAU : Récupère la météo pour toutes les villes avec capteurs
+   */
+  getCitiesWeather(): Observable<CitiesWeatherResponse> {
+    return this.http.get<CitiesWeatherResponse>(`${this.apiUrl}/cities`).pipe(
+      catchError(this.handleError<CitiesWeatherResponse>('getCitiesWeather'))
+    );
+  }
+
+  /**
+   * ✅ NOUVEAU : Récupère le dashboard météo
+   */
+  getWeatherDashboard(includeCities: boolean = false): Observable<any> {
+    const params = new HttpParams().set('cities', includeCities.toString());
+    return this.http.get(`${this.apiUrl}/dashboard`, { params }).pipe(
+      catchError(this.handleError<any>('getWeatherDashboard'))
+    );
+  }
+
+  /**
+   * ✅ NOUVEAU : Obtenir l'URL de l'icône météo OpenWeather
+   */
+  getWeatherIconUrl(iconCode: string): string {
+  return `https://openweathermap.org/img/wn/${iconCode}@2x.png`;
+}
+  /**
+   * Gère les erreurs des appels HTTP
    */
   private handleError<T>(operation = 'operation', result?: T) {
     return (error: any): Observable<T> => {
-      console.error(`${operation} a échoué : ${error.message}`);
-      // Retourne un résultat vide pour que l'application ne plante pas.
+      console.error(`❌ ${operation} a échoué:`, error.message);
       return of(result as T);
     };
   }

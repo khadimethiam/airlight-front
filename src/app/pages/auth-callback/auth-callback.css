@@ -1,0 +1,50 @@
+/* auth-callback.css - Style optionnel pour la page de callback */
+
+/* Animation du spinner */
+.spinner-border {
+  animation: spinner-grow 0.75s linear infinite;
+}
+
+/* Animation de l'icône de succès */
+.fa-check-circle {
+  animation: fadeInScale 0.5s ease-in-out;
+}
+
+@keyframes fadeInScale {
+  0% {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Animation de l'icône d'erreur */
+.fa-exclamation-circle {
+  animation: shake 0.5s ease-in-out;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-10px); }
+  75% { transform: translateX(10px); }
+}
+
+/* Transition douce pour les messages */
+h3, p {
+  transition: all 0.3s ease-in-out;
+}
+
+/* Style responsive */
+@media (max-width: 576px) {
+  h3 {
+    font-size: 1.5rem;
+  }
+  
+  .spinner-border {
+    width: 2rem !important;
+    height: 2rem !important;
+  }
+}

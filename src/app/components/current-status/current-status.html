@@ -1,82 +1,257 @@
 <section id="current-status" class="py-5 bg-light">
   <div class="container">
-    <h2 class="text-center fw-bold mb-5">État Actuel du capteur AirLight</h2>
 
-    <div *ngIf="isLoading" class="text-center">
-      <div class="spinner-border text-primary" role="status"></div>
-      <p class="mt-2">Chargement des données en temps réel...</p>
-    </div>
+    <!-- ✅ TITRE + INFORMATIONS + SÉLECTEUR -->
+    <div class="text-center mb-4">
+      <h2 class="fw-bold mb-3">
+        État Actuel
+        <span *ngIf="currentSensor" class="sensor-name-inline">- {{ currentSensor.name }}</span>
+      </h2>
 
-    <div *ngIf="!isLoading && latestSensorData && weatherData" class="row justify-content-center">
-      <div class="col-lg-10">
-        <div class="status-card shadow">
-          <div class="row g-0">
-            <!-- Section Qualité de l'Air -->
-            <div class="col-md-7 p-4 p-lg-5 border-end-md">
-              <h3 class="fw-bold mb-3">Qualité de l'Air</h3>
-              <div class="d-flex align-items-center mb-4">
-                <div class="aqi-value" [ngClass]="aqiStatus.class">{{ latestSensorData.airQualityIndex }}</div>
-                <div class="ms-4">
-                  <div class="aqi-level" [ngClass]="aqiStatus.class">{{ aqiStatus.level }}</div>
-                  <div class="text-muted">Indice de Qualité de l'Air (AQI)</div>
-                </div>
-              </div>
-              <div class="row">
-                <div class="col-6 col-lg-4 mb-3">
-                  <div class="pollutant-label">PM2.5</div>
-                  <div class="pollutant-value">{{ latestSensorData.measurements.pm25.toFixed(1) }} <span class="unit">µg/m³</span></div>
-                </div>
-                <div class="col-6 col-lg-4 mb-3">
-                  <div class="pollutant-label">PM10</div>
-                  <div class="pollutant-value">{{ latestSensorData.measurements.pm10.toFixed(1) }} <span class="unit">µg/m³</span></div>
-                </div>
-              </div>
-              <div class="aqi-gauge-container mt-4">
-                <!-- La barre de fond avec le dégradé -->
-                <div class="aqi-gauge-bar"></div>
-                
-                <!-- Le curseur qui se positionne dynamiquement -->
-                <div class="aqi-gauge-cursor" [style.left]="getAqiCursorPosition()">
-                  <!-- Le petit triangle en dessous du curseur -->
-                  <div class="aqi-gauge-cursor-triangle"></div>
-                </div>
-
-                <!-- Les étiquettes des niveaux -->
-                <div class="aqi-gauge-labels">
-                  <span>Bon</span>
-                  <span>Modéré</span>
-                  <span>Mauvais</span>
-                  <span>Dangereux</span>
-                </div>
-              </div>
+      <!-- ✅ NOUVEAU : SÉLECTEUR DE CAPTEUR -->
+      <div class="sensor-selector-container mb-3">
+        <!-- Message de chargement initial -->
+        <div *ngIf="allSensors.length === 0 && isLoading" class="alert alert-primary">
+          <div class="d-flex align-items-center justify-content-center">
+            <div class="spinner-border spinner-border-sm me-3" role="status">
+              <span class="visually-hidden">Chargement...</span>
             </div>
-  
-              <!-- =============================================== -->
-              <!-- FIN DE LA NOUVELLE SECTION -->
-              <!-- =============================================== -->
-
-            
-            <!-- Section Météo -->
-            <div class="col-md-5 p-4 p-lg-5 weather-section" [ngClass]="getWeatherBackgroundClass()">
-              <h3 class="fw-bold mb-3">Météo</h3>
-              <div class="d-flex align-items-center mb-4">
-                <img [src]="weatherData.current.weather.iconUrl" alt="Icône météo" class="weather-icon me-3">
-                <div>
-                  <div class="weather-temp">{{ weatherData.current.temperature }}°C</div>
-                  <div class="weather-desc">{{ weatherData.current.weather.description }}</div>
-                </div>
-              </div>
-              <div class="row">
-                <div class="col-6">
-                  <div class="weather-info"><i class="fas fa-wind me-2"></i> Vent  {{ weatherData.current.wind.speed_kmh }} km/h</div>
-                </div>
-                <div class="col-6">
-                  <div class="weather-info"><i class="fas fa-tint me-2"></i>Humidite {{ weatherData.current.humidity }}%</div>
-                </div>
-              </div>
+            <div class="text-start">
+              <strong>Chargement des capteurs...</strong>
+              <br>
+              <small>Récupération de la liste des capteurs disponibles</small>
             </div>
           </div>
         </div>
+
+        <div class="d-flex align-items-center justify-content-center gap-3 flex-wrap">
+
+          <!-- Mode géolocalisation -->
+          <button
+            *ngIf="isManualSelection"
+            class="btn btn-geolocation"
+            (click)="useGeolocation()"
+            [disabled]="isLoading">
+            <i class="fas fa-location-arrow me-2"></i>
+            Utiliser ma position
+          </button>
+
+          <!-- Sélecteur de capteur -->
+          <div class="custom-select-wrapper">
+            <i class="fas fa-map-marker-alt select-icon"></i>
+            <select
+              class="form-select custom-sensor-select"
+              [(ngModel)]="selectedSensorId"
+              (change)="onSensorChange()"
+              [disabled]="isLoading">
+              <option value="" disabled>Choisir un lieu</option>
+              <optgroup *ngFor="let city of cities" [label]="city">
+                <option
+                  *ngFor="let sensor of sensorsByCity[city]"
+                  [value]="sensor.id">
+                  {{ sensor.name }}
+                </option>
+              </optgroup>
+            </select>
+          </div>
+
+          <!-- Bouton actualiser -->
+          <button
+            class="btn-refresh-compact"
+            (click)="refreshNearestSensor()"
+            [disabled]="isLoading"
+            [title]="isManualSelection ? 'Actualiser les données' : 'Actualiser la position'">
+            <i class="fas fa-sync-alt" [class.fa-spin]="isLoading"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Badges inline compacts -->
+      <div class="sensor-info-inline">
+        <!-- Ville -->
+        <span *ngIf="currentSensor" class="info-pill">
+          <i class="fas fa-map-marker-alt"></i>
+          {{ currentSensor.city }}
+        </span>
+
+        <!-- Distance (uniquement si géolocalisation) -->
+        <span *ngIf="sensorDistance && !isManualSelection" class="info-pill distance">
+          <i class="fas fa-route"></i>
+          {{ sensorDistance }}
+        </span>
+
+        <!-- Status géolocalisation -->
+        <span *ngIf="isUsingGeolocation && !isManualSelection" class="info-pill success">
+          <i class="fas fa-check-circle"></i>
+          Capteur le plus proche
+        </span>
+
+        <!-- Status sélection manuelle -->
+        <span *ngIf="isManualSelection" class="info-pill manual">
+          <i class="fas fa-hand-pointer"></i>
+          Sélection manuelle
+        </span>
+      </div>
+
+      <!-- Message d'erreur compact (si présent) -->
+      <div *ngIf="geolocationError" class="alert alert-warning alert-sm mt-3">
+        <i class="fas fa-exclamation-triangle me-2"></i>
+        {{ geolocationError }}
+      </div>
+    </div>
+
+    <!-- SPINNER DE CHARGEMENT AMÉLIORÉ -->
+    <div *ngIf="isLoading" class="text-center my-5">
+      <div class="spinner-border text-primary mb-3" role="status" style="width: 3rem; height: 3rem;">
+        <span class="visually-hidden">Chargement...</span>
+      </div>
+
+      <!-- Message contextuel -->
+      <div *ngIf="!isManualSelection && !currentSensor" class="mb-2">
+        <h5 class="text-primary mb-2">
+          <i class="fas fa-location-arrow me-2"></i>
+          Localisation en cours...
+        </h5>
+        <p class="text-muted mb-1">
+          Recherche du capteur le plus proche de votre position
+        </p>
+        <small class="text-muted d-block">
+          💡 Astuce : Vous pouvez sélectionner un lieu manuellement ci-dessus
+        </small>
+      </div>
+
+      <div *ngIf="isManualSelection || currentSensor" class="mb-2">
+        <p class="text-muted">
+          <i class="fas fa-satellite-dish me-2"></i>
+          Chargement des données en cours...
+        </p>
+      </div>
+    </div>
+
+    <!-- CONTENU PRINCIPAL (Cartes AQI et Météo) -->
+    <div *ngIf="!isLoading && latestSensorData && weatherData" class="row justify-content-center">
+      <div class="col-lg-10">
+
+        <!-- UNE SEULE LIGNE AVEC 2 CARTES CÔTE À CÔTE -->
+        <div class="row g-4">
+
+          <!-- 📊 CARTE QUALITÉ DE L'AIR (gauche) -->
+          <div class="col-md-6">
+            <div class="card status-card shadow h-100">
+              <div class="card-body p-4">
+                <h3 class="fw-bold mb-4">Qualité de l'Air</h3>
+
+                <!-- AQI Value et Status -->
+                <div class="d-flex align-items-center mb-4">
+                  <div class="aqi-value-large" [ngClass]="aqiStatus.class">
+                    {{ latestSensorData.airQualityIndex }}
+                  </div>
+                  <div class="ms-4">
+                    <div class="aqi-level-large" [ngClass]="aqiStatus.class">
+                      {{ aqiStatus.level }}
+                    </div>
+                    <div class="aqi-subtitle">Indice de Qualité de l'Air (AQI)</div>
+                  </div>
+                </div>
+
+                <!-- Polluants -->
+                <div class="row mb-4">
+                  <div class="col-6">
+                    <div class="pollutant-box">
+                      <div class="pollutant-label">PM2.5</div>
+                      <div class="pollutant-value">
+                        {{ latestSensorData.measurements.pm25.toFixed(1) }}
+                        <span class="unit">µg/m³</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-6">
+                    <div class="pollutant-box">
+                      <div class="pollutant-label">PM10</div>
+                      <div class="pollutant-value">
+                        {{ latestSensorData.measurements.pm10.toFixed(1) }}
+                        <span class="unit">µg/m³</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Jauge AQI -->
+                <div class="aqi-gauge-container">
+                  <div class="aqi-gauge-bar"></div>
+                  <div class="aqi-gauge-cursor" [style.left]="getAqiCursorPosition()">
+                    <div class="aqi-gauge-cursor-triangle"></div>
+                  </div>
+                  <div class="aqi-gauge-labels">
+                    <span>Bon</span>
+                    <span>Modéré</span>
+                    <span>Sensible</span>
+                    <span>Mauvais</span>
+                    <span>Très mauvais</span>
+                    <span>Dangereux</span>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+
+          <!-- 🌤️ CARTE MÉTÉO (droite) -->
+          <div class="col-md-6">
+            <div class="card shadow h-100 weather-section" [ngClass]="getWeatherBackgroundClass()">
+              <div class="card-body p-4">
+                <h3 class="fw-bold mb-4">Météo</h3>
+
+                <!-- Température et icône -->
+                <div class="d-flex align-items-center mb-4">
+                  <div class="weather-icon-wrapper me-3">
+                    <i [class]="getWeatherIconClass(weatherData.current.weather.icon) + ' fa-4x'"></i>
+                  </div>
+                  <div>
+                    <div class="weather-temp">{{ weatherData.current.temperature }}°C</div>
+                    <div class="weather-desc">{{ weatherData.current.weather.description }}</div>
+                  </div>
+                </div>
+
+                <!-- Détails météo -->
+                <div class="row g-3">
+                  <div class="col-6">
+                    <div class="weather-detail-box p-3 rounded">
+                      <i class="fas fa-wind me-2"></i>
+                      <span class="d-block small text-white-50 mb-1">Vent</span>
+                      <strong class="fs-5">{{ weatherData.current.wind.speed_kmh }} km/h</strong>
+                    </div>
+                  </div>
+                  <div class="col-6">
+                    <div class="weather-detail-box p-3 rounded">
+                      <i class="fas fa-tint me-2"></i>
+                      <span class="d-block small text-white-50 mb-1">Humidité</span>
+                      <strong class="fs-5">{{ weatherData.current.humidity }}%</strong>
+                    </div>
+                  </div>
+                  <div class="col-6">
+                    <div class="weather-detail-box p-3 rounded">
+                      <i class="fas fa-thermometer-half me-2"></i>
+                      <span class="d-block small text-white-50 mb-1">Ressenti</span>
+                      <strong class="fs-5">{{ weatherData.current.feels_like }}°C</strong>
+                    </div>
+                  </div>
+                  <div class="col-6">
+                    <div class="weather-detail-box p-3 rounded">
+                      <i class="fas fa-tachometer-alt me-2"></i>
+                      <span class="d-block small text-white-50 mb-1">Pression</span>
+                      <strong class="fs-5">{{ weatherData.current.pressure }} hPa</strong>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+
+        </div>
+        <!-- FIN ROW -->
+
       </div>
     </div>
   </div>

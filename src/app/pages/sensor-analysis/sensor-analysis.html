@@ -1,3 +1,5 @@
+<!-- src/app/pages/sensor-analysis/sensor-analysis.html -->
+
 <div class="container-fluid">
   <h1 class="display-5 fw-bold text-dark">Analyse des Capteurs</h1>
   <p class="text-muted">Données détaillées et historiques par capteur.</p>
@@ -24,54 +26,213 @@
 
     <!-- Affichage des données -->
     <div *ngIf="!isLoadingData && latestData">
-      <!-- Jauges de données en temps réel -->
+
+      <!-- ✅ NOUVEAU : Info Capteur + Statut -->
+      <div class="card shadow-sm mb-4">
+        <div class="card-body">
+          <div class="row align-items-center">
+            <div class="col-md-8">
+              <h5 class="mb-2">
+                <i class="fas fa-map-marker-alt text-primary me-2"></i>
+                {{ getSelectedSensorName() }}
+              </h5>
+              <p class="text-muted mb-0">
+                <i class="fas fa-location-dot me-2"></i>
+                {{ getSelectedSensorCity() }}, {{ getSelectedSensorCountry() }}
+              </p>
+            </div>
+            <div class="col-md-4 text-md-end">
+              <div class="sensor-status-badge" [ngClass]="getSensorStatusClass()">
+                <i class="fas fa-circle me-2"></i>
+                {{ getSensorStatusText() }}
+              </div>
+              <div class="text-muted small mt-2">
+                Dernière mise à jour : {{ latestData.timestamp | date:'dd/MM/yyyy HH:mm' }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ✅ Jauges de données en temps réel -->
       <div class="row g-4 mb-4">
+        <!-- Gauge AQI - Indice Qualité Air -->
         <div class="col-lg-3 col-md-6">
-          <app-gauge 
-            label="PM2.5" 
-            [value]="latestData.measurements.pm25" 
+          <app-gauge
+            label="Qualité de l'Air (AQI)"
+            [value]="latestData.airQualityIndex"
+            unit="AQI"
+            [max]="300"
+            [status]="getAQIStatus(latestData.airQualityIndex)">
+          </app-gauge>
+        </div>
+
+        <!-- Gauge PM2.5 -->
+        <div class="col-lg-3 col-md-6">
+          <app-gauge
+            label="PM2.5"
+            [value]="latestData.measurements.pm25"
             unit="µg/m³"
             [max]="75"
             [status]="getPmStatus(latestData.measurements.pm25)">
           </app-gauge>
         </div>
 
+        <!-- Gauge PM10 -->
         <div class="col-lg-3 col-md-6">
-      <app-gauge 
-        label="PM10" 
-        [value]="latestData.measurements.pm10" 
-        unit="µg/m³"
-        [max]="150"
-        [status]="getPmStatus(latestData.measurements.pm10)">
-      </app-gauge>
-    </div>
+          <app-gauge
+            label="PM10"
+            [value]="latestData.measurements.pm10"
+            unit="µg/m³"
+            [max]="150"
+            [status]="getPmStatus(latestData.measurements.pm10)">
+          </app-gauge>
+        </div>
 
-    <div class="col-lg-3 col-md-6">
-      <app-gauge 
-        label="CO2" 
-        [value]="latestData.measurements.co2" 
-        unit="ppm"
-        [max]="2000"
-        [status]="latestData.measurements.co2 < 1000 ? 'Bon' : 'Élevé'">
-      </app-gauge>
-    </div>
-    <div class="col-lg-3 col-md-6">
-      <app-gauge 
-        label="Température" 
-        [value]="latestData.measurements.temperature" 
-        unit="°C"
-        [max]="40"
-        status="Optimal">
-      </app-gauge>
-    </div>
-
-        <!-- Ajoutez d'autres jauges pour PM10, CO2, etc. sur le même modèle -->
+        <!-- Gauge CO2 -->
+        <div class="col-lg-3 col-md-6">
+          <app-gauge
+            label="CO2"
+            [value]="latestData.measurements.co2"
+            unit="ppm"
+            [max]="2000"
+            [status]="getCO2Status(latestData.measurements.co2)">
+          </app-gauge>
+        </div>
       </div>
 
-      <!-- Graphique et tableau (à venir) -->
-      <div class="alert alert-info">
-        Le graphique historique et le tableau des données seront implémentés ici.
+      <!-- ✅ Deuxième ligne de gauges -->
+      <div class="row g-4 mb-4">
+        <!-- Gauge Température -->
+        <div class="col-lg-3 col-md-6">
+          <app-gauge
+            label="Température"
+            [value]="latestData.measurements.temperature"
+            unit="°C"
+            [max]="40"
+            [status]="getTemperatureStatus(latestData.measurements.temperature)">
+          </app-gauge>
+        </div>
+
+        <!-- Gauge Humidité -->
+        <div class="col-lg-3 col-md-6">
+          <app-gauge
+            label="Humidité"
+            [value]="latestData.measurements.humidity"
+            unit="%"
+            [max]="100"
+            [status]="getHumidityStatus(latestData.measurements.humidity)">
+          </app-gauge>
+        </div>
+
+        <!-- Gauge PM1 (si disponible) -->
+        <div class="col-lg-3 col-md-6" *ngIf="latestData.measurements.pm1">
+          <app-gauge
+            label="PM1"
+            [value]="latestData.measurements.pm1"
+            unit="µg/m³"
+            [max]="50"
+            [status]="getPmStatus(latestData.measurements.pm1)">
+          </app-gauge>
+        </div>
+
+        <!-- Gauge TVOC (si disponible) -->
+        <div class="col-lg-3 col-md-6" *ngIf="latestData.measurements.tvoc">
+          <app-gauge
+            label="TVOC"
+            [value]="latestData.measurements.tvoc"
+            unit="ppb"
+            [max]="500"
+            [status]="getTVOCStatus(latestData.measurements.tvoc)">
+          </app-gauge>
+        </div>
       </div>
+
+      <!-- ✅ Tableau des données historiques avec pagination -->
+      <div class="card shadow-sm">
+        <div class="card-header">
+          <h5 class="mb-0">
+            <i class="fas fa-table me-2"></i>
+            Données Historiques
+            <span class="badge bg-primary ms-2">{{ historicalData.length }} mesures</span>
+          </h5>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-hover">
+              <thead>
+                <tr>
+                  <th>Date/Heure</th>
+                  <th>AQI</th>
+                  <th>PM2.5</th>
+                  <th>PM10</th>
+                  <th>CO2</th>
+                  <th>Température</th>
+                  <th>Humidité</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let data of paginatedData">
+                  <td>{{ data.timestamp | date:'dd/MM/yyyy HH:mm' }}</td>
+                  <td>
+                    <span class="badge" [ngClass]="getAQIBadgeClass(data.airQualityIndex)">
+                      {{ data.airQualityIndex }}
+                    </span>
+                  </td>
+                  <td>{{ data.measurements.pm25.toFixed(1) }} µg/m³</td>
+                  <td>{{ data.measurements.pm10.toFixed(1) }} µg/m³</td>
+                  <td>{{ data.measurements.co2 }} ppm</td>
+                  <td>{{ data.measurements.temperature.toFixed(1) }}°C</td>
+                  <td>{{ data.measurements.humidity.toFixed(0) }}%</td>
+                </tr>
+
+                <!-- Message si vide -->
+                <tr *ngIf="historicalData.length === 0">
+                  <td colspan="7" class="text-center text-muted py-5">
+                    <i class="fas fa-inbox fa-3x mb-3 d-block"></i>
+                    <p class="mb-0">Aucune donnée historique disponible.</p>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- ✅ Pagination style centre d'alertes -->
+          <div *ngIf="historicalData.length > 0" class="d-flex justify-content-between align-items-center mt-4">
+            <div class="text-muted">
+              Affichage de {{ getStartIndex() + 1 }} à {{ getEndIndex() }} sur {{ historicalData.length }} mesure(s)
+            </div>
+
+            <nav aria-label="Pagination des données">
+              <ul class="pagination mb-0">
+                <!-- Bouton Précédent -->
+                <li class="page-item" [class.disabled]="currentPage === 1">
+                  <button class="page-link" (click)="previousPage()" [disabled]="currentPage === 1">
+                    <i class="fas fa-chevron-left me-1"></i>
+                    Précédent
+                  </button>
+                </li>
+
+                <!-- Indicateur page courante -->
+                <li class="page-item active">
+                  <span class="page-link">
+                    Page {{ currentPage }} / {{ totalPages }}
+                  </span>
+                </li>
+
+                <!-- Bouton Suivant -->
+                <li class="page-item" [class.disabled]="currentPage === totalPages">
+                  <button class="page-link" (click)="nextPage()" [disabled]="currentPage === totalPages">
+                    Suivant
+                    <i class="fas fa-chevron-right ms-1"></i>
+                  </button>
+                </li>
+              </ul>
+            </nav>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
 </div>

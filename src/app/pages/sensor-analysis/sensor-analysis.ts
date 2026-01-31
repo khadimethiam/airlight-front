@@ -1,3 +1,5 @@
+// src/app/pages/sensor-analysis/sensor-analysis.ts
+
 import { Component, OnInit, OnDestroy, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -15,7 +17,7 @@ import { Chart, registerables } from 'chart.js';
   styleUrls: ['./sensor-analysis.css']
 })
 export class SensorAnalysis implements OnInit, OnDestroy {
-  
+
   // Référence au canvas du graphique
   @ViewChild('historyChart') private historyChartCanvas!: ElementRef<HTMLCanvasElement>;
   private historyChart?: Chart;
@@ -24,7 +26,7 @@ export class SensorAnalysis implements OnInit, OnDestroy {
   public selectedSensorId: string | null = null;
   public latestData: SensorData | null = null;
   public historicalData: SensorData[] = [];
-  
+
   public isLoadingSensors = true;
   public isLoadingData = false;
 
@@ -58,10 +60,11 @@ export class SensorAnalysis implements OnInit, OnDestroy {
 
   onSensorChange(): void {
     if (!this.selectedSensorId) return;
-    
+
     this.isLoadingData = true;
     this.latestData = null;
     this.historicalData = [];
+    this.currentPage = 1; // Reset pagination
 
     this.sensorService.getLatestSensorData(this.selectedSensorId).subscribe(response => {
       if (response.success) this.latestData = response.data;
@@ -72,7 +75,6 @@ export class SensorAnalysis implements OnInit, OnDestroy {
         this.historicalData = response.data;
         this.totalPages = Math.ceil(this.historicalData.length / this.itemsPerPage);
         this.updatePaginatedData();
-        // On utilise un setTimeout pour s'assurer que le canvas est bien dans le DOM
         setTimeout(() => this.initHistoryChart(), 0);
       }
       this.isLoadingData = false;
@@ -85,7 +87,6 @@ export class SensorAnalysis implements OnInit, OnDestroy {
     const ctx = this.historyChartCanvas.nativeElement.getContext('2d');
     if (!ctx) return;
 
-    // Préparation des données pour le graphique (on inverse les données pour un ordre chronologique)
     const reversedData = [...this.historicalData].reverse();
     const labels = reversedData.map(d => new Date(d.timestamp).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }));
     const pm25Data = reversedData.map(d => d.measurements.pm25);
@@ -122,7 +123,116 @@ export class SensorAnalysis implements OnInit, OnDestroy {
     });
   }
 
-  // --- MÉTHODES DE PAGINATION ---
+  // ============================================
+  // ✅ NOUVEAUX HELPERS POUR INFO CAPTEUR
+  // ============================================
+
+  getSelectedSensor(): Sensor | undefined {
+    return this.sensors.find(s => s.id === this.selectedSensorId);
+  }
+
+  getSelectedSensorName(): string {
+    return this.getSelectedSensor()?.name || 'Capteur';
+  }
+
+  getSelectedSensorCity(): string {
+    return this.getSelectedSensor()?.city || 'Ville inconnue';
+  }
+
+  getSelectedSensorCountry(): string {
+    return this.getSelectedSensor()?.country || 'Sénégal';
+  }
+
+  getSensorStatusText(): string {
+    const sensor = this.getSelectedSensor();
+    if (!sensor) return 'Inconnu';
+
+    // Vérifier plusieurs propriétés possibles
+    if (sensor.status === 'online' || sensor.isOnline === true) {
+      return 'En ligne';
+    } else if (sensor.status === 'offline' || sensor.isOnline === false) {
+      return 'Hors ligne';
+    }
+
+    return 'Statut inconnu';
+  }
+
+  getSensorStatusClass(): string {
+    const sensor = this.getSelectedSensor();
+    if (!sensor) return 'status-unknown';
+
+    if (sensor.status === 'online' || sensor.isOnline === true) {
+      return 'status-online';
+    } else if (sensor.status === 'offline' || sensor.isOnline === false) {
+      return 'status-offline';
+    }
+
+    return 'status-unknown';
+  }
+
+  // ============================================
+  // ✅ HELPERS POUR LES STATUTS (GAUGES)
+  // ============================================
+
+  getAQIStatus(aqi: number): string {
+    if (aqi <= 50) return 'Bon';
+    if (aqi <= 100) return 'Modéré';
+    if (aqi <= 150) return 'Mauvais';
+    if (aqi <= 200) return 'Malsain';
+    if (aqi <= 300) return 'Très mauvais';
+    return 'Dangereux';
+  }
+
+  getPmStatus(value: number): string {
+    if (value < 15) return 'Bon';
+    if (value < 35) return 'Modéré';
+    if (value < 55) return 'Mauvais';
+    return 'Dangereux';
+  }
+
+  getCO2Status(value: number): string {
+    if (value < 1000) return 'Bon';
+    if (value < 1500) return 'Modéré';
+    if (value < 2000) return 'Élevé';
+    return 'Dangereux';
+  }
+
+  getTemperatureStatus(value: number): string {
+    if (value >= 18 && value <= 26) return 'Optimal';
+    if (value >= 15 && value <= 30) return 'Acceptable';
+    return 'Inconfortable';
+  }
+
+  getHumidityStatus(value: number): string {
+    if (value >= 40 && value <= 60) return 'Optimal';
+    if (value >= 30 && value <= 70) return 'Acceptable';
+    if (value < 30) return 'Sec';
+    return 'Humide';
+  }
+
+  getTVOCStatus(value: number): string {
+    if (value < 220) return 'Bon';
+    if (value < 660) return 'Modéré';
+    if (value < 2200) return 'Mauvais';
+    return 'Dangereux';
+  }
+
+  // ============================================
+  // ✅ HELPERS POUR LES BADGES DU TABLEAU
+  // ============================================
+
+  getAQIBadgeClass(aqi: number): string {
+    if (aqi <= 50) return 'bg-success';
+    if (aqi <= 100) return 'bg-info';
+    if (aqi <= 150) return 'bg-warning';
+    if (aqi <= 200) return 'bg-danger';
+    return 'bg-dark';
+  }
+
+  // ============================================
+  // ✅ PAGINATION - Style Centre d'Alertes
+  // ============================================
+
   updatePaginatedData(): void {
     const startIndex = (this.currentPage - 1) * this.itemsPerPage;
     const endIndex = startIndex + this.itemsPerPage;
@@ -133,24 +243,42 @@ export class SensorAnalysis implements OnInit, OnDestroy {
     if (page >= 1 && page <= this.totalPages) {
       this.currentPage = page;
       this.updatePaginatedData();
+      this.scrollToTop();
     }
   }
 
   nextPage(): void {
-    this.goToPage(this.currentPage + 1);
+    if (this.currentPage < this.totalPages) {
+      this.currentPage++;
+      this.updatePaginatedData();
+      this.scrollToTop();
+    }
   }
 
   previousPage(): void {
-    this.goToPage(this.currentPage - 1);
+    if (this.currentPage > 1) {
+      this.currentPage--;
+      this.updatePaginatedData();
+      this.scrollToTop();
+    }
   }
-  // --- FIN DES MÉTHODES DE PAGINATION ---
 
-  getPmStatus(value: number): string {
-    if (value < 15) return 'Bon';
-    if (value < 35) return 'Modéré';
-    if (value < 55) return 'Mauvais';
-    return 'Dangereux';
+  getStartIndex(): number {
+    return (this.currentPage - 1) * this.itemsPerPage;
   }
+
+  getEndIndex(): number {
+    const end = this.currentPage * this.itemsPerPage;
+    return end > this.historicalData.length ? this.historicalData.length : end;
+  }
+
+  scrollToTop(): void {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // ============================================
+  // CLEANUP
+  // ============================================
 
   ngOnDestroy(): void {
     if (this.historyChart) this.historyChart.destroy();

@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterLink } from '@angular/router'; // Importez Router
+import { Router, RouterLink } from '@angular/router';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { AuthService } from '../../services/auth'; // Importez le service
+import { AuthService } from '../../services/auth';
 
 @Component({
   selector: 'app-auth',
@@ -17,9 +17,13 @@ export class Auth {
   registerForm: FormGroup;
   errorMessage: string | null = null;
   successMessage: string | null = null;
-  isLoading = false; // Pour afficher un indicateur de chargement
+  isLoading = false;
 
-  // Injectez AuthService et Router
+  // ✅ Variables pour gérer la visibilité des mots de passe
+  showLoginPassword = false;
+  showRegisterPassword = false;
+  showConfirmPassword = false;
+
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
@@ -42,6 +46,23 @@ export class Auth {
   switchTo(view: 'login' | 'register'): void {
     this.isLoginView = view === 'login';
     this.clearMessages();
+    // ✅ Réinitialiser la visibilité des mots de passe lors du changement d'onglet
+    this.showLoginPassword = false;
+    this.showRegisterPassword = false;
+    this.showConfirmPassword = false;
+  }
+
+  // ✅ NOUVELLES MÉTHODES: Toggle password visibility
+  toggleLoginPassword(): void {
+    this.showLoginPassword = !this.showLoginPassword;
+  }
+
+  toggleRegisterPassword(): void {
+    this.showRegisterPassword = !this.showRegisterPassword;
+  }
+
+  toggleConfirmPassword(): void {
+    this.showConfirmPassword = !this.showConfirmPassword;
   }
 
   onLogin(): void {
@@ -55,7 +76,10 @@ export class Auth {
       next: (response) => {
         this.isLoading = false;
         if (response.success) {
-          this.router.navigate(['/dashboard']); // Redirection vers le dashboard
+          this.successMessage = "Connexion réussie ! Redirection...";
+          setTimeout(() => {
+            this.router.navigate(['/dashboard']);
+          }, 1000);
         }
       },
       error: (err) => {
@@ -82,7 +106,10 @@ export class Auth {
       next: (response) => {
         this.isLoading = false;
         if (response.success) {
-          this.router.navigate(['/dashboard']); // Redirection vers le dashboard
+          this.successMessage = "Inscription réussie ! Redirection...";
+          setTimeout(() => {
+            this.router.navigate(['/dashboard']);
+          }, 1000);
         }
       },
       error: (err) => {
@@ -97,7 +124,7 @@ export class Auth {
     window.location.href = 'http://localhost:3000/auth/google';
   }
 
-  private clearMessages( ): void {
+  private clearMessages(): void {
     this.errorMessage = null;
     this.successMessage = null;
   }

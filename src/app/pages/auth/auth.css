@@ -63,3 +63,125 @@
   transform: translateY(-2px);
   box-shadow: 0 10px 25px rgba(135, 206, 235, 0.3);
 }
+
+/* ✅ NOUVEAUX STYLES: Bouton toggle password */
+.password-input-wrapper {
+  position: relative;
+}
+
+.password-toggle-btn {
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  z-index: 10;
+  width: 40px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.password-toggle-btn:hover {
+  background: transparent;
+}
+
+.password-toggle-btn:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+.password-toggle-btn i {
+  font-size: 1rem;
+  transition: color 0.2s ease;
+}
+
+.password-toggle-btn:hover i {
+  color: #87CEEB !important;
+}
+
+/* Ajuster le padding du input pour faire de la place au bouton */
+.password-input-wrapper input.form-control {
+  padding-right: 2.5rem !important;
+}
+
+/* Animation pour le spinner de chargement */
+.spinner-border {
+  width: 2rem;
+  height: 2rem;
+}
+
+/* Transition douce pour le contenu lors du chargement */
+.tab-content {
+  transition: opacity 0.3s ease;
+}
+
+.tab-content.opacity-50 {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+/* Style pour les alertes de validation */
+.alert {
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Messages de validation des mots de passe */
+small {
+  font-size: 0.875rem;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+small i {
+  font-size: 0.875rem;
+}
+
+/* Amélioration du focus sur les inputs */
+.form-control:focus {
+  border-color: #87CEEB;
+  box-shadow: 0 0 0 0.2rem rgba(135, 206, 235, 0.25);
+}
+
+/* Responsive */
+@media (max-width: 576px) {
+  .auth-container {
+    padding: 1.5rem !important;
+  }
+  
+  .password-toggle-btn {
+    width: 35px;
+  }
+  
+  .password-toggle-btn i {
+    font-size: 0.9rem;
+  }
+}
+
+/* Animation pour les icônes d'œil */
+.password-toggle-btn i {
+  transition: transform 0.2s ease;
+}
+
+.password-toggle-btn:active i {
+  transform: scale(0.95);
+}
+
+/* Style pour boutons désactivés */
+.btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}

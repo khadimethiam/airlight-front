@@ -1,101 +1,197 @@
+<!-- src/app/pages/alerts-center/alerts-center.html -->
+
 <div class="container-fluid">
   <h1 class="display-5 fw-bold text-dark">Centre d'Alertes</h1>
   <p class="text-muted">Gestion et analyse des alertes du système.</p>
   <hr class="my-4">
 
-  <!-- Filtres -->
+  <!-- Filtres en temps réel -->
   <div class="card shadow-sm mb-4">
     <div class="card-body">
       <div class="row g-3 align-items-end">
-        <div class="col-md-3">
+        <div class="col-md-4">
           <label for="severityFilter" class="form-label">Sévérité</label>
-          <select id="severityFilter" class="form-select" [(ngModel)]="filters.severity">
+          <select id="severityFilter"
+                  class="form-select"
+                  [(ngModel)]="filters.severity"
+                  (ngModelChange)="applyFilters()">
             <option value="">Toutes</option>
-            <option value="hazardous">Dangereux</option>
-            <option value="unhealthy">Malsain</option>
-            <option value="poor">Mauvais</option>
-            <option value="moderate">Modéré</option>
+            <option value="hazardous"> Dangereux</option>
+            <option value="unhealthy"> Malsain</option>
+            <option value="poor"> Mauvais</option>
+            <option value="moderate"> Modéré</option>
+            <option value="good"> Bon</option>
           </select>
         </div>
         <div class="col-md-4">
           <label for="sensorFilter" class="form-label">Capteur</label>
-          <select id="sensorFilter" class="form-select" [(ngModel)]="filters.sensorId">
-            <option value="">Tous</option>
-            <option *ngFor="let sensor of sensors" [value]="sensor.id">{{ sensor.name }}</option>
+          <select id="sensorFilter"
+                  class="form-select"
+                  [(ngModel)]="filters.sensorId"
+                  (ngModelChange)="applyFilters()">
+            <option value="">Tous les capteurs</option>
+            <option *ngFor="let sensor of sensors" [value]="sensor.id">
+              {{ sensor.name }} - {{ sensor.city }}
+            </option>
           </select>
         </div>
-        <div class="col-md-3">
+        <div class="col-md-4">
           <label for="statusFilter" class="form-label">État</label>
-          <select id="statusFilter" class="form-select" [(ngModel)]="filters.isActive">
-            <option value="true">Actives</option>
-            <option value="false">Inactives</option>
+          <select id="statusFilter"
+                  class="form-select"
+                  [(ngModel)]="filters.isActive"
+                  (ngModelChange)="applyFilters()">
             <option value="">Toutes</option>
+            <option value="true"> Actives</option>
+            <option value="false"> Inactives</option>
           </select>
-        </div>
-        <div class="col-md-2">
-          <button class="btn btn-primary w-100" (click)="applyFilters()">Filtrer</button>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Graphiques d'analyse 
-  <div class="row g-4 mb-4">
-    <div class="col-lg-6">
-      <div class="card shadow-sm h-100">
-        <div class="card-body">
-          <h5 class="card-title">Répartition par Sévérité (7j)</h5>
-          <div style="height: 300px;">
-            <canvas #severityChart></canvas>
-          </div>
-        </div>
+  <!-- Stats rapides -->
+  <div class="row g-3 mb-4">
+    <div class="col-6 col-md-3">
+      <div class="stat-card stat-total">
+        <div class="stat-value">{{ alerts.length }}</div>
+        <div class="stat-label">Alertes</div>
       </div>
     </div>
-    <div class="col-lg-6">
-      <div class="card shadow-sm h-100">
-        <div class="card-body">
-          <h5 class="card-title">Capteurs les Plus Problématiques (à venir)</h5>
-          <div class="alert alert-secondary mt-3">Le graphique des capteurs sera implémenté ici.</div>
-        </div>
+    <div class="col-6 col-md-3">
+      <div class="stat-card stat-active">
+        <div class="stat-value">{{ getActiveAlertsCount() }}</div>
+        <div class="stat-label">Actives</div>
       </div>
     </div>
-  </div>-->
+    <div class="col-6 col-md-3">
+      <div class="stat-card stat-critical">
+        <div class="stat-value">{{ getCriticalAlertsCount() }}</div>
+        <div class="stat-label">Critiques</div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="stat-card stat-sensors">
+        <div class="stat-value">{{ getAffectedSensorsCount() }}</div>
+        <div class="stat-label">Capteurs</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ✅ Bouton Export déplacé en haut -->
+  <div class="d-flex justify-content-end mb-3">
+    <button class="btn btn-export" (click)="exportToCSV()" [disabled]="alerts.length === 0">
+      <i class="fas fa-download me-2"></i>
+      Exporter en CSV
+    </button>
+  </div>
 
   <!-- Tableau des alertes -->
   <div class="card shadow-sm">
+    <div class="card-header">
+      <h5 class="mb-0">
+        <i class="fas fa-list me-2"></i>
+        Liste des Alertes
+        <span class="badge bg-primary ms-2">{{ alerts.length }} résultat(s)</span>
+      </h5>
+    </div>
     <div class="card-body">
-      <h5 class="card-title">Liste des Alertes</h5>
-      <div *ngIf="isLoading" class="text-center py-4"><div class="spinner-border"></div></div>
+      <!-- Loading -->
+      <div *ngIf="isLoading" class="text-center py-5">
+        <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;"></div>
+        <p class="mt-3">Chargement des alertes...</p>
+      </div>
+
+      <!-- Tableau -->
       <div *ngIf="!isLoading" class="table-responsive">
         <table class="table table-hover align-middle">
           <thead>
             <tr>
               <th>Sévérité</th>
               <th>Capteur</th>
+              <th>Localisation</th>
               <th>Message</th>
               <th>Date</th>
               <th>État</th>
-              <th>Actions</th>
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let alert of alerts">
-              <td><span class="badge fs-6" [ngClass]="getSeverityClass(alert.severity)">{{ alert.severity }}</span></td>
-              <td>{{ alert.sensorId }}</td>
-              <td>{{ alert.message }}</td>
-              <td>{{ alert.createdAt | date:'dd/MM/yy HH:mm' }}</td>
-              <td><span class="badge" [ngClass]="alert.isActive ? 'bg-success-subtle text-success-emphasis' : 'bg-secondary-subtle'">{{ alert.isActive ? 'Active' : 'Inactive' }}</span></td>
+            <tr *ngFor="let alert of paginatedAlerts">
+              <!-- Sévérité en français -->
               <td>
-                <button *ngIf="alert.isActive" class="btn btn-sm btn-outline-secondary" (click)="acknowledge(alert._id)" title="Acquitter">
-                  <i class="fas fa-check"></i>
-                </button>
+                <span class="badge fs-6" [ngClass]="getSeverityClass(alert.severity)">
+                  {{ getSeverityIcon(alert.severity) }} {{ getSeverityLabel(alert.severity) }}
+                </span>
+              </td>
+
+              <!-- Nom du capteur -->
+              <td class="fw-medium">{{ getSensorName(alert.sensorId) }}</td>
+
+              <!-- Ville du capteur -->
+              <td class="text-muted">
+                <i class="fas fa-map-marker-alt me-1"></i>
+                {{ getSensorCity(alert.sensorId) }}
+              </td>
+
+              <!-- Message -->
+              <td>{{ alert.message }}</td>
+
+              <!-- Date formatée -->
+              <td class="text-nowrap">
+                <small>{{ formatDate(alert.createdAt) }}</small>
+              </td>
+
+              <!-- État -->
+              <td>
+                <span class="badge" [ngClass]="alert.isActive ? 'bg-success' : 'bg-secondary'">
+                  {{ alert.isActive ? '✓ Active' : '⏸ Inactive' }}
+                </span>
               </td>
             </tr>
+
+            <!-- Message si vide -->
             <tr *ngIf="alerts.length === 0">
-              <td colspan="6" class="text-center text-muted py-4">Aucune alerte ne correspond à vos filtres.</td>
+              <td colspan="6" class="text-center text-muted py-5">
+                <i class="fas fa-inbox fa-3x mb-3 d-block"></i>
+                <p class="mb-0">Aucune alerte ne correspond à vos filtres.</p>
+              </td>
             </tr>
           </tbody>
         </table>
+      </div>
+
+      <!-- ✅ Pagination -->
+      <div *ngIf="alerts.length > 0" class="d-flex justify-content-between align-items-center mt-4">
+        <div class="text-muted">
+          Affichage de {{ getStartIndex() + 1 }} à {{ getEndIndex() }} sur {{ alerts.length }} alerte(s)
+        </div>
+
+        <nav aria-label="Pagination des alertes">
+          <ul class="pagination mb-0">
+            <!-- Bouton Précédent -->
+            <li class="page-item" [class.disabled]="currentPage === 1">
+              <button class="page-link" (click)="previousPage()" [disabled]="currentPage === 1">
+                <i class="fas fa-chevron-left me-1"></i>
+                Précédent
+              </button>
+            </li>
+
+            <!-- Indicateur page courante -->
+            <li class="page-item active">
+              <span class="page-link">
+                Page {{ currentPage }} / {{ totalPages }}
+              </span>
+            </li>
+
+            <!-- Bouton Suivant -->
+            <li class="page-item" [class.disabled]="currentPage === totalPages">
+              <button class="page-link" (click)="nextPage()" [disabled]="currentPage === totalPages">
+                Suivant
+                <i class="fas fa-chevron-right ms-1"></i>
+              </button>
+            </li>
+          </ul>
+        </nav>
       </div>
     </div>
   </div>
