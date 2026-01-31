@@ -6,11 +6,13 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { AlertService, Alert } from '../../services/alert';
 import { SensorService, Sensor } from '../../services/sensor';
+import { TranslateAlertPipe } from '../../pipes/translate-alert-pipe'; 
+
 
 @Component({
   selector: 'app-alerts-center',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TranslateAlertPipe],
   templateUrl: './alerts-center.html',
   styleUrls: ['./alerts-center.css']
 })
@@ -293,4 +295,71 @@ export class AlertsCenter implements OnInit {
     };
     this.applyFilters();
   }
+
+  // ============================================
+// ✅ MÉTHODE POUR TRADUIRE TOUS LES CAPTEURS
+// ============================================
+
+getDisplaySensorName(sensorId: string): string {
+  // Si c'est un capteur météo (commence par WEATHER_)
+  if (sensorId.startsWith('WEATHER_')) {
+    const weatherNames: { [key: string]: string } = {
+      'WEATHER_RUFISQUE': 'Météo Rufisque',
+      'WEATHER_RICHARD-TOLL': 'Météo Richard-Toll',
+      'WEATHER_THIÈS': 'Météo Thiès',
+      'WEATHER_THIES': 'Météo Thiès',
+      'WEATHER_DAKAR': 'Météo Dakar',
+      'WEATHER_SAINT-LOUIS': 'Météo Saint-Louis',
+      'WEATHER_DIOURBEL': 'Météo Diourbel',
+      'WEATHER_ZIGUINCHOR': 'Météo Ziguinchor',
+      'WEATHER_BIGNONA': 'Météo Bignona',
+      'WEATHER_PIKINE': 'Météo Pikine',
+      'WEATHER_KEUR_MASSAR': 'Météo Keur Massar',
+      'WEATHER_KEUR-MASSAR': 'Météo Keur Massar'
+    };
+    return weatherNames[sensorId] || sensorId;
+  }
+  
+  // Sinon, c'est un capteur physique -> utiliser le nom du capteur
+  return this.getSensorName(sensorId);
+}
+
+
+// ============================================
+// ✅ EXTRAIRE LA VILLE DEPUIS LE CAPTEUR MÉTÉO
+// ============================================
+
+getDisplayLocation(alert: Alert): string {
+  // 1️⃣ Si la ville est dans les données de l'alerte
+  if (alert.data?.weatherConditions?.city) {
+    return alert.data.weatherConditions.city;
+  }
+  
+  if (alert.data?.city) {
+    return alert.data.city;
+  }
+  
+  // 2️⃣ Si c'est un capteur météo, extraire la ville du nom
+  if (alert.sensorId.startsWith('WEATHER_')) {
+    const cityMap: { [key: string]: string } = {
+      'WEATHER_RUFISQUE': 'Rufisque',
+      'WEATHER_RICHARD-TOLL': 'Richard-Toll',
+      'WEATHER_THIÈS': 'Thiès',
+      'WEATHER_THIES': 'Thiès',
+      'WEATHER_DAKAR': 'Dakar',
+      'WEATHER_SAINT-LOUIS': 'Saint-Louis',
+      'WEATHER_DIOURBEL': 'Diourbel',
+      'WEATHER_ZIGUINCHOR': 'Ziguinchor',
+      'WEATHER_BIGNONA': 'Bignona',
+      'WEATHER_PIKINE': 'Pikine',
+      'WEATHER_KEUR_MASSAR': 'Keur Massar',
+      'WEATHER_KEUR-MASSAR': 'Keur Massar'
+    };
+    return cityMap[alert.sensorId] || 'Inconnu';
+  }
+  
+  // 3️⃣ Sinon, utiliser la ville du capteur physique
+  return this.getSensorCity(alert.sensorId);
+}
+
 }

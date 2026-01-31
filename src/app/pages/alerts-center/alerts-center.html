@@ -117,20 +117,20 @@
           </thead>
           <tbody>
             <tr *ngFor="let alert of paginatedAlerts">
-              <!-- Sévérité en français -->
+              <!-- ✅ CHANGEMENT 1: Sévérité avec pipe -->
               <td>
                 <span class="badge fs-6" [ngClass]="getSeverityClass(alert.severity)">
-                  {{ getSeverityIcon(alert.severity) }} {{ getSeverityLabel(alert.severity) }}
+                  {{ getSeverityIcon(alert.severity) }} {{ alert.severity | translateAlert:'severity' }}
                 </span>
               </td>
 
-              <!-- Nom du capteur -->
-              <td class="fw-medium">{{ getSensorName(alert.sensorId) }}</td>
+              <!-- ✅ CHANGEMENT 2: Capteur avec pipe -->
+              <td class="fw-medium">{{ getDisplaySensorName(alert.sensorId) }}</td>
 
-              <!-- Ville du capteur -->
+              <!-- ✅ CHANGEMENT 3: Localisation depuis data -->
               <td class="text-muted">
                 <i class="fas fa-map-marker-alt me-1"></i>
-                {{ getSensorCity(alert.sensorId) }}
+                {{ getDisplayLocation(alert) }}
               </td>
 
               <!-- Message -->
@@ -141,10 +141,10 @@
                 <small>{{ formatDate(alert.createdAt) }}</small>
               </td>
 
-              <!-- État -->
+              <!-- ✅ CHANGEMENT 4: État avec pipe -->
               <td>
                 <span class="badge" [ngClass]="alert.isActive ? 'bg-success' : 'bg-secondary'">
-                  {{ alert.isActive ? '✓ Active' : '⏸ Inactive' }}
+                  {{ alert.isActive ? '✓' : '⏸' }} {{ alert.isActive | translateAlert:'status' }}
                 </span>
               </td>
             </tr>
