@@ -4,6 +4,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
+import { environment } from '../../environments/environment';
 
 // Interface pour la réponse de la météo actuelle
 export interface WeatherResponse {
@@ -92,7 +93,8 @@ export interface CitiesWeatherResponse {
   providedIn: 'root'
 })
 export class WeatherService {
-  private apiUrl = 'http://localhost:3000/weather';
+  // ✅ CHANGEMENT : utiliser environment.apiUrl au lieu de localhost
+  private apiUrl = `${environment.apiUrl}/weather`;
 
   constructor(private http: HttpClient) { }
 
@@ -114,7 +116,7 @@ export class WeatherService {
   }
 
   /**
-   * ✅ NOUVEAU : Récupère les prévisions météo
+   * ✅ Récupère les prévisions météo
    */
   getForecast(city?: string, lat?: number, lon?: number, days: number = 5): Observable<ForecastResponse> {
     let params = new HttpParams().set('days', days.toString());
@@ -131,7 +133,7 @@ export class WeatherService {
   }
 
   /**
-   * ✅ NOUVEAU : Récupère la météo pour toutes les villes avec capteurs
+   * ✅ Récupère la météo pour toutes les villes avec capteurs
    */
   getCitiesWeather(): Observable<CitiesWeatherResponse> {
     return this.http.get<CitiesWeatherResponse>(`${this.apiUrl}/cities`).pipe(
@@ -140,7 +142,7 @@ export class WeatherService {
   }
 
   /**
-   * ✅ NOUVEAU : Récupère le dashboard météo
+   * ✅ Récupère le dashboard météo
    */
   getWeatherDashboard(includeCities: boolean = false): Observable<any> {
     const params = new HttpParams().set('cities', includeCities.toString());
@@ -150,11 +152,12 @@ export class WeatherService {
   }
 
   /**
-   * ✅ NOUVEAU : Obtenir l'URL de l'icône météo OpenWeather
+   * ✅ Obtenir l'URL de l'icône météo OpenWeather
    */
   getWeatherIconUrl(iconCode: string): string {
-  return `https://openweathermap.org/img/wn/${iconCode}@2x.png`;
-}
+    return `https://openweathermap.org/img/wn/${iconCode}@2x.png`;
+  }
+
   /**
    * Gère les erreurs des appels HTTP
    */

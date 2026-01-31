@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 // Interface pour typer la réponse de l'API
 export interface DashboardData {
@@ -26,20 +27,19 @@ export interface DashboardData {
 
 @Injectable({
   providedIn: 'root'
-} )
+})
 export class DashboardService {
-  private adminApiUrl = 'http://localhost:3000/admin';
-  private sensorsApiUrl = 'http://localhost:3000/sensors'; // <-- Ajoutez l'URL des capteurs
+  // ✅ CHANGEMENT : environment.apiUrl au lieu de localhost
+  private adminApiUrl = `${environment.apiUrl}/admin`;
+  private sensorsApiUrl = `${environment.apiUrl}/sensors`;
 
-  constructor(private http: HttpClient ) { }
+  constructor(private http: HttpClient) { }
 
   getOverviewData(): Observable<DashboardData> {
-    return this.http.get<DashboardData>(`${this.adminApiUrl}/dashboard` );
+    return this.http.get<DashboardData>(`${this.adminApiUrl}/dashboard`);
   }
 
-  // --- AJOUTEZ CETTE MÉTHODE ---
-  // Récupère les stats globales des capteurs, y compris l'évolution temporelle
   getGlobalSensorStats(period: string = '24h'): Observable<any> {
-    return this.http.get<any>(`${this.sensorsApiUrl}/stats/global?period=${period}` );
+    return this.http.get<any>(`${this.sensorsApiUrl}/stats/global?period=${period}`);
   }
 }

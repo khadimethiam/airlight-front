@@ -1,8 +1,7 @@
-// src/app/services/alert.service.ts - VERSION COMPLÈTE AVEC AUTHENTIFICATION
-
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 // Interface pour une alerte
 export interface Alert {
@@ -76,7 +75,8 @@ export interface AlertStatsResponse {
   providedIn: 'root'
 })
 export class AlertService {
-  private apiUrl = 'http://localhost:3000/alerts';
+  // ✅ CHANGEMENT : environment.apiUrl au lieu de localhost
+  private apiUrl = `${environment.apiUrl}/alerts`;
 
   constructor(private http: HttpClient) { }
 
@@ -84,9 +84,6 @@ export class AlertService {
   // HELPER METHODS
   // ========================================
 
-  /**
-   * Obtenir les headers avec token JWT
-   */
   private getAuthHeaders(): HttpHeaders {
     const token = localStorage.getItem('token') || sessionStorage.getItem('token');
 
@@ -102,9 +99,6 @@ export class AlertService {
     });
   }
 
-  /**
-   * Vérifier si l'utilisateur est authentifié
-   */
   private isAuthenticated(): boolean {
     return !!(localStorage.getItem('token') || sessionStorage.getItem('token'));
   }
@@ -113,10 +107,6 @@ export class AlertService {
   // PUBLIC METHODS - ROUTES SANS AUTH
   // ========================================
 
-  /**
-   * Récupère les alertes avec des filtres optionnels
-   * Route publique (sans authentification)
-   */
   getAlerts(filters: any = {}): Observable<AlertsResponse> {
     let params = new HttpParams();
     for (const key in filters) {
@@ -127,10 +117,6 @@ export class AlertService {
     return this.http.get<AlertsResponse>(this.apiUrl, { params });
   }
 
-  /**
-   * Récupère les alertes actives pour un capteur
-   * Route publique
-   */
   getActiveAlerts(sensorId?: string): Observable<any> {
     let params = new HttpParams();
     if (sensorId) {
@@ -139,18 +125,10 @@ export class AlertService {
     return this.http.get<any>(`${this.apiUrl}/active`, { params });
   }
 
-  /**
-   * Récupère une alerte par ID
-   * Route publique
-   */
   getAlertById(alertId: string): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}/${alertId}`);
   }
 
-  /**
-   * Récupère l'historique des alertes pour un capteur
-   * Route publique
-   */
   getAlertHistory(sensorId: string, filters: any = {}): Observable<any> {
     let params = new HttpParams();
     for (const key in filters) {
@@ -161,10 +139,6 @@ export class AlertService {
     return this.http.get<any>(`${this.apiUrl}/history/${sensorId}`, { params });
   }
 
-  /**
-   * Récupère les recommandations santé
-   * Route publique
-   */
   getHealthRecommendations(pollutant: string, value: number): Observable<any> {
     const params = new HttpParams()
       .set('pollutant', pollutant)
@@ -173,19 +147,11 @@ export class AlertService {
     return this.http.get<any>(`${this.apiUrl}/health-recommendations`, { params });
   }
 
-  /**
-   * Récupère le dashboard santé temps réel
-   * Route publique
-   */
   getHealthDashboard(period: string = '1h'): Observable<any> {
     const params = new HttpParams().set('period', period);
     return this.http.get<any>(`${this.apiUrl}/dashboard/health`, { params });
   }
 
-  /**
-   * Récupère les statistiques rapides
-   * Route publique
-   */
   getQuickStats(hours: number = 24): Observable<any> {
     const params = new HttpParams().set('hours', hours.toString());
     return this.http.get<any>(`${this.apiUrl}/stats/quick`, { params });
@@ -195,10 +161,6 @@ export class AlertService {
   // PROTECTED METHODS - ROUTES AVEC AUTH
   // ========================================
 
-  /**
-   * Récupère les statistiques des alertes
-   * ⚠️ REQUIERT AUTHENTIFICATION
-   */
   getAlertStats(period: string = '7d'): Observable<AlertStatsResponse> {
     const params = new HttpParams().set('period', period);
     const headers = this.getAuthHeaders();
@@ -209,10 +171,6 @@ export class AlertService {
     );
   }
 
-  /**
-   * Acquitte une alerte
-   * ⚠️ REQUIERT AUTHENTIFICATION
-   */
   acknowledgeAlert(alertId: string): Observable<any> {
     const headers = this.getAuthHeaders();
     return this.http.patch(
@@ -222,10 +180,6 @@ export class AlertService {
     );
   }
 
-  /**
-   * Résout une alerte
-   * ⚠️ REQUIERT AUTHENTIFICATION
-   */
   resolveAlert(alertId: string, resolution?: string): Observable<any> {
     const headers = this.getAuthHeaders();
     const body = resolution ? { resolution } : {};
@@ -237,10 +191,6 @@ export class AlertService {
     );
   }
 
-  /**
-   * Acquitte plusieurs alertes en une fois
-   * ⚠️ REQUIERT AUTHENTIFICATION
-   */
   bulkAcknowledge(alertIds: string[]): Observable<any> {
     const headers = this.getAuthHeaders();
     return this.http.post(
@@ -250,10 +200,6 @@ export class AlertService {
     );
   }
 
-  /**
-   * Résout plusieurs alertes en une fois
-   * ⚠️ REQUIERT AUTHENTIFICATION
-   */
   bulkResolve(alertIds: string[], resolution?: string): Observable<any> {
     const headers = this.getAuthHeaders();
     const body: any = { alertIds };
@@ -268,10 +214,6 @@ export class AlertService {
     );
   }
 
-  /**
-   * Vérifie et crée des alertes pour des données de capteur
-   * ⚠️ REQUIERT AUTHENTIFICATION
-   */
   checkAlerts(sensorData: any): Observable<any> {
     const headers = this.getAuthHeaders();
     return this.http.post(
@@ -281,10 +223,6 @@ export class AlertService {
     );
   }
 
-  /**
-   * Récupère les seuils d'alerte
-   * ⚠️ REQUIERT AUTHENTIFICATION
-   */
   getThresholds(): Observable<any> {
     const headers = this.getAuthHeaders();
     return this.http.get<any>(
@@ -297,10 +235,6 @@ export class AlertService {
   // ADMIN METHODS - ROUTES ADMIN SEULEMENT
   // ========================================
 
-  /**
-   * Met à jour les seuils d'alerte
-   * ⚠️ REQUIERT ADMIN
-   */
   updateThresholds(thresholds: any): Observable<any> {
     const headers = this.getAuthHeaders();
     return this.http.put(
@@ -310,10 +244,6 @@ export class AlertService {
     );
   }
 
-  /**
-   * Valide des seuils avant application
-   * ⚠️ REQUIERT ADMIN
-   */
   validateThresholds(thresholds: any): Observable<any> {
     const headers = this.getAuthHeaders();
     return this.http.post(
@@ -323,10 +253,6 @@ export class AlertService {
     );
   }
 
-  /**
-   * Crée une alerte manuellement
-   * ⚠️ REQUIERT ADMIN
-   */
   createManualAlert(alertData: any): Observable<any> {
     const headers = this.getAuthHeaders();
     return this.http.post(
@@ -336,10 +262,6 @@ export class AlertService {
     );
   }
 
-  /**
-   * Nettoie les anciennes alertes
-   * ⚠️ REQUIERT ADMIN
-   */
   cleanupOldAlerts(daysOld: number = 30): Observable<any> {
     const headers = this.getAuthHeaders();
     const params = new HttpParams().set('daysOld', daysOld.toString());
@@ -350,10 +272,6 @@ export class AlertService {
     );
   }
 
-  /**
-   * Test d'alerte (environnement développement seulement)
-   * ⚠️ REQUIERT ADMIN
-   */
   testAlert(testType: string = 'basic', sensorId?: string): Observable<any> {
     const headers = this.getAuthHeaders();
     const body: any = { testType };
@@ -368,10 +286,6 @@ export class AlertService {
     );
   }
 
-  /**
-   * Compare les anciens et nouveaux standards
-   * ⚠️ REQUIERT ADMIN
-   */
   compareStandards(): Observable<any> {
     const headers = this.getAuthHeaders();
     return this.http.get(
@@ -384,9 +298,6 @@ export class AlertService {
   // UTILITY METHODS
   // ========================================
 
-  /**
-   * Obtient le rapport de qualité de l'air pour un capteur
-   */
   getAirQualityReport(sensorId: string, hours: number = 24): Observable<any> {
     const params = new HttpParams().set('hours', hours.toString());
     return this.http.get<any>(
@@ -395,9 +306,6 @@ export class AlertService {
     );
   }
 
-  /**
-   * Formatte une date d'alerte pour l'affichage
-   */
   formatAlertDate(dateString: string): string {
     const date = new Date(dateString);
     const now = new Date();
@@ -417,9 +325,6 @@ export class AlertService {
     return date.toLocaleDateString('fr-FR');
   }
 
-  /**
-   * Obtient la couleur selon la sévérité
-   */
   getSeverityColor(severity: string): string {
     const colors: { [key: string]: string } = {
       'good': '#10b981',
@@ -431,9 +336,6 @@ export class AlertService {
     return colors[severity] || '#6b7280';
   }
 
-  /**
-   * Obtient l'icône selon la sévérité
-   */
   getSeverityIcon(severity: string): string {
     const icons: { [key: string]: string } = {
       'good': '🟢',
@@ -445,9 +347,6 @@ export class AlertService {
     return icons[severity] || '⚪';
   }
 
-  /**
-   * Obtient le label en français selon la sévérité
-   */
   getSeverityLabel(severity: string): string {
     const labels: { [key: string]: string } = {
       'good': 'Bon',
