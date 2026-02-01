@@ -6,63 +6,63 @@ import { DashboardOverview } from './pages/dashboard-overview/dashboard-overview
 import { Auth } from './pages/auth/auth';
 import { AuthCallback } from './pages/auth-callback/auth-callback';
 import { authGuard } from './guards/auth.guard';
+import { AdminGuard } from './guards/admin.guard'; 
 import { SensorAnalysis } from './pages/sensor-analysis/sensor-analysis';
 import { AlertsCenter } from './pages/alerts-center/alerts-center';
 import { PredictionsViewer } from './pages/predictions-viewer/predictions-viewer';
 
 export const routes: Routes = [
     {
-        path: '', // La route par défaut (ex: http://localhost:4200/ )
+        path: '',
         component: Landing,
         title: 'AirLight - Accueil'
     },
     {
-        path: 'auth', // La route d'authentification (ex: http://localhost:4200/auth )
+        path: 'auth',
         component: Auth,
         title: 'AirLight - Authentification'
     },
-     {
-        path: 'auth/callback', // Le chemin que le backend doit viser
+    {
+        path: 'auth/callback',
         component: AuthCallback,
         title: 'Redirection...'
     },
-
     {
-        path: 'dashboard', // La route du tableau de bord (ex: http://localhost:4200/dashboard )
+        path: 'dashboard',
         component: Dashboard,
         title: 'AirLight - Dashboard',
-        canActivate: [authGuard], // On ajoute la garde d'authentification
-children: [ // <-- Déclaration des routes enfants
+        canActivate: [authGuard],
+        children: [
             {
-                path: '', // La route par défaut du dashboard (ex: /dashboard)
-                redirectTo: 'overview', // Redirige vers la vue d'ensemble
+                path: '',
+                redirectTo: 'overview',
                 pathMatch: 'full'
             },
             {
-                path: 'overview', // La route /dashboard/overview
+                path: 'overview',
                 component: DashboardOverview,
-                title: 'Dashboard - Vue d\'ensemble'
-            },
-            // Nous ajouterons les autres routes (capteurs, alertes...) ici plus tard
-            {
-            path: 'sensors', // La route /dashboard/sensors
-            component: SensorAnalysis,
-            title: 'Dashboard - Analyse des Capteurs'
+                title: 'Dashboard - Vue d\'ensemble',
+                canActivate: [AdminGuard] 
             },
             {
-                path: 'alerts', // La route /dashboard/alerts
+                path: 'sensors',
+                component: SensorAnalysis,
+                title: 'Dashboard - Analyse des Capteurs'
+            },
+            {
+                path: 'alerts',
                 component: AlertsCenter,
                 title: 'Dashboard - Centre d\'Alertes'
             },
             {
-            path: 'predictions', // La route /dashboard/predictions
-            component: PredictionsViewer,
-            title: 'Dashboard - Prédictions IA'
-        }
+                path: 'predictions',
+                component: PredictionsViewer,
+                title: 'Dashboard - Prédictions IA'
+            }
         ]
     },
     {
-        path: '**', // Redirige toute autre URL vers la page d'accueil
+        path: '**',
         redirectTo: ''
     }
 ];

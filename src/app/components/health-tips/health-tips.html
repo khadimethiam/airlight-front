@@ -1,6 +1,5 @@
 <section id="healthTips" class="py-5 bg-light">
   <div class="container">
-    <!-- Titre de la section -->
     <h2 class="text-center fw-bold text-dark mb-5">
       <i class="fas fa-heartbeat text-danger me-3"></i>
       Conseils Santé
@@ -8,34 +7,17 @@
 
     <div class="row justify-content-center">
       <div class="col-lg-8">
-        <!-- Conteneur principal du carrousel -->
-        <div class="health-tips-container p-5 rounded-3 shadow-lg text-center">
+        <div class="health-tips-container p-4 p-md-5 rounded-3 shadow-lg text-center">
           
-          <!-- Indicateur de chargement -->
           <div *ngIf="isLoading" class="text-center">
             <div class="spinner-border text-primary" role="status"></div>
             <p class="mt-2">Chargement des conseils...</p>
           </div>
 
-          <!-- Carrousel Bootstrap (affiché seulement après chargement) -->
-          <div *ngIf="!isLoading" id="healthCarousel" class="carousel slide" data-bs-ride="carousel">
+          <div *ngIf="!isLoading" [id]="carouselId" class="carousel slide" data-bs-ride="carousel">
             
-            <!-- Indicateurs du carrousel -->
-            <div class="carousel-indicators">
-              <button 
-                *ngFor="let tip of displayedHealthTips; let i = index"
-                type="button" 
-                data-bs-target="#healthCarousel" 
-                [attr.data-bs-slide-to]="i" 
-                [class.active]="i === 0" 
-                [attr.aria-current]="i === 0 ? 'true' : 'false'"
-                [attr.aria-label]="'Conseil ' + (i + 1)">
-              </button>
-            </div>
-
             <!-- Contenu des diapositives -->
             <div class="carousel-inner">
-              <!-- La boucle se fait sur 'displayedHealthTips' -->
               <div 
                 *ngFor="let tip of displayedHealthTips; let i = index"
                 class="carousel-item" 
@@ -45,21 +27,33 @@
                   <i [class]="tip.icon + ' fa-2x text-primary'"></i>
                 </div>
                 <h3 class="h4 fw-bold text-dark mb-3">{{ tip.title }}</h3>
-                <p class="lead text-muted">{{ tip.content }}</p>
+                <p class="lead text-muted mb-0">{{ tip.content }}</p>
               </div>
             </div>
 
             <!-- Contrôles Précédent/Suivant -->
-            <button class="carousel-control-prev" type="button" data-bs-target="#healthCarousel" data-bs-slide="prev">
+            <button class="carousel-control-prev" type="button" [attr.data-bs-target]="'#' + carouselId" data-bs-slide="prev">
               <span class="carousel-control-prev-icon" aria-hidden="true"></span>
               <span class="visually-hidden">Précédent</span>
             </button>
-            <button class="carousel-control-next" type="button" data-bs-target="#healthCarousel" data-bs-slide="next">
+            <button class="carousel-control-next" type="button" [attr.data-bs-target]="'#' + carouselId" data-bs-slide="next">
               <span class="carousel-control-next-icon" aria-hidden="true"></span>
               <span class="visually-hidden">Suivant</span>
             </button>
           </div>
-          <!-- Fin du carrousel Bootstrap -->
+
+          <!-- Indicateurs séparés, en dehors du carrousel -->
+          <div *ngIf="!isLoading" class="health-tips-indicators mt-4">
+            <button 
+              *ngFor="let tip of displayedHealthTips; let i = index"
+              type="button" 
+              class="indicator-dot"
+              [class.active]="i === 0"
+              [attr.data-bs-target]="'#' + carouselId" 
+              [attr.data-bs-slide-to]="i"
+              [attr.aria-label]="'Conseil ' + (i + 1)">
+            </button>
+          </div>
 
         </div>
       </div>

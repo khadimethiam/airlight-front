@@ -163,6 +163,7 @@ export class HealthTips implements OnInit, OnDestroy {
 
   public displayedHealthTips: HealthTip[] = [];
   public isLoading = true;
+  public carouselId = 'healthCarousel';
   private sensorSubscription?: Subscription;
 
   constructor(
