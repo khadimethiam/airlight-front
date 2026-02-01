@@ -1,0 +1,68 @@
+{
+  "$schema": "./node_modules/@angular/service-worker/config/schema.json",
+  "index": "/index.html",
+  "assetGroups": [
+    {
+      "name": "app",
+      "installMode": "prefetch",
+      "resources": {
+        "files": [
+          "/favicon.ico",
+          "/index.csr.html",
+          "/index.html",
+          "/manifest.webmanifest",
+          "/*.css",
+          "/*.js"
+        ]
+      }
+    },
+    {
+      "name": "assets",
+      "installMode": "lazy",
+      "updateMode": "prefetch",
+      "resources": {
+        "files": [
+          "/**/*.(svg|cur|jpg|jpeg|png|apng|webp|avif|gif|otf|ttf|woff|woff2)"
+        ]
+      }
+    }
+  ],
+  "dataGroups": [
+    {
+      "name": "sensors-api",
+      "urls": ["/sensors", "/sensors/*/latest", "/sensors/nearest"],
+      "cacheConfig": {
+        "maxSize": 50,
+        "maxAge": "5m",
+        "strategy": "freshness"
+      }
+    },
+    {
+      "name": "weather-api",
+      "urls": ["/weather/current", "/weather/cities", "/weather/forecast"],
+      "cacheConfig": {
+        "maxSize": 30,
+        "maxAge": "10m",
+        "strategy": "freshness"
+      }
+    },
+    {
+      "name": "predictions-api",
+      "urls": ["/predictions/*"],
+      "cacheConfig": {
+        "maxSize": 20,
+        "maxAge": "1h",
+        "strategy": "performance"
+      }
+    },
+    {
+      "name": "alerts-api",
+      "urls": ["/alerts/active", "/alerts"],
+      "cacheConfig": {
+        "maxSize": 50,
+        "maxAge": "2m",
+        "strategy": "freshness"
+      }
+    }
+  ]
+}
