@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AuthService } from '../../services/auth';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-auth',
@@ -119,9 +120,9 @@ export class Auth {
     });
   }
 
+  // ✅ APRÈS
   onGoogleAuth(): void {
-    // Redirection directe vers l'URL de l'API pour l'authentification Google
-    window.location.href = 'http://localhost:3000/auth/google';
+      window.location.href = `${environment.apiUrl}/auth/google`;
   }
 
   private clearMessages(): void {
