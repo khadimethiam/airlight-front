@@ -1,6 +1,6 @@
 // src/app/components/air-quality/air-quality.ts - CORRIGÉ
 
-import { Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewInit, ViewEncapsulation } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Chart, registerables } from 'chart.js';
@@ -14,7 +14,8 @@ import { Sensor } from '../../services/sensor';
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './air-quality.html',
-  styleUrls: ['./air-quality.css']
+  styleUrls: ['./air-quality.css'],
+   encapsulation: ViewEncapsulation.None
 })
 export class AirQuality implements OnInit, AfterViewInit, OnDestroy {
 
