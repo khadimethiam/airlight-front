@@ -8,6 +8,9 @@
   "theme_color": "#1a1a2e",
   "background_color": "#0f0f23",
   "orientation": "portrait-primary",
+  "permissions": [
+    "geolocation"
+  ],
   "icons": [
     {
       "src": "icons/icon-72x72.png",

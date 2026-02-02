@@ -133,20 +133,31 @@ export class CurrentStatus implements OnInit {
   /**
    * ✅ NOUVEAU : Retour à la géolocalisation
    */
-  useGeolocation(): void {
+  async useGeolocation(): Promise<void> {
     console.log('📍 Retour à la géolocalisation automatique');
     this.isManualSelection = false;
     this.selectedSensorId = '';
-    this.loadNearestSensor();
+    await this.loadNearestSensor();
   }
-
   /**
-   * Charge le capteur le plus proche via géolocalisation
-   */
-  loadNearestSensor(): void {
-    this.isLoading = true;
-    this.geolocationError = null;
+ * Charge le capteur le plus proche via géolocalisation
+ */
+async loadNearestSensor(): Promise<void> {
+  this.isLoading = true;
+  this.geolocationError = null;
 
+  try {
+    // 🎯 Demander la permission explicitement
+    console.log('📍 Demande de permission de géolocalisation...');
+    const granted = await this.geolocationService.requestPermission();
+    
+    if (!granted) {
+      throw new Error('Permission de géolocalisation refusée');
+    }
+
+    console.log('✅ Permission accordée, récupération de la position...');
+
+    // 🎯 Obtenir la position
     this.geolocationService.getCurrentPosition().pipe(
       switchMap(position => {
         console.log('📍 Position obtenue:', position);
@@ -163,10 +174,7 @@ export class CurrentStatus implements OnInit {
       switchMap(nearestResponse => {
         if (nearestResponse.success && nearestResponse.nearest_sensor) {
           const sensor = nearestResponse.nearest_sensor;
-
-          // ✅ Mettre à jour le sélecteur
           this.selectedSensorId = sensor.id;
-
           return this.loadSensorData(sensor, sensor.distance);
         } else {
           console.warn('⚠️ Aucun capteur proche trouvé, recherche d\'un capteur en ligne');
@@ -202,7 +210,32 @@ export class CurrentStatus implements OnInit {
         this.isLoading = false;
       }
     });
+
+  } catch (error: any) {
+    // 🎯 Gérer le refus de permission silencieusement
+    console.error('❌ Permission refusée:', error);
+    this.geolocationError = null; // Pas d'affichage d'erreur
+    this.isUsingGeolocation = false;
+    
+    // Charger automatiquement le premier capteur disponible
+    this.loadFirstOnlineSensor().subscribe({
+      next: ({ weather, sensor }) => {
+        if (weather.success && weather.data) {
+          this.weatherData = weather.data;
+        }
+        if (sensor.success && sensor.data) {
+          this.latestSensorData = sensor.data;
+          this.updateAqiStatus(sensor.data.airQualityIndex);
+        }
+        this.isLoading = false;
+      },
+      error: (err) => {
+        console.error('❌ Erreur chargement capteur par défaut:', err);
+        this.isLoading = false;
+      }
+    });
   }
+}
 
   /**
    * ✅ NOUVEAU : Charger les données d'un capteur spécifique
@@ -314,17 +347,15 @@ export class CurrentStatus implements OnInit {
     );
   }
 
-  refreshNearestSensor(): void {
-    if (this.isManualSelection) {
-      // ✅ CORRECTION : En mode manuel, recharger les données du capteur sélectionné
-      console.log('🔄 Actualisation en mode manuel');
-      this.onSensorChange();
-    } else {
-      // Sinon, relancer la géolocalisation
-      console.log('🔄 Actualisation en mode géolocalisation');
-      this.loadNearestSensor();
-    }
+  async refreshNearestSensor(): Promise<void> {
+  if (this.isManualSelection) {
+    console.log('🔄 Actualisation en mode manuel');
+    this.onSensorChange();
+  } else {
+    console.log('🔄 Actualisation en mode géolocalisation');
+    await this.loadNearestSensor();
   }
+}
 
   getAqiCursorPosition(): string {
     if (!this.latestSensorData) {

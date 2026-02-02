@@ -100,6 +100,42 @@ export class GeolocationService {
   }
 
   /**
+ * Demander explicitement la permission de géolocalisation
+ */
+  async requestPermission(): Promise<boolean> {
+    try {
+      // Vérifier d'abord le statut actuel
+      const permissionStatus = await this.checkPermission();
+      
+      if (permissionStatus === 'granted') {
+        return true;
+      }
+      
+      if (permissionStatus === 'denied') {
+        throw new Error('Permission de géolocalisation refusée. Veuillez l\'activer dans les paramètres.');
+      }
+
+      // Forcer la demande en appelant getCurrentPosition
+      return new Promise((resolve, reject) => {
+        navigator.geolocation.getCurrentPosition(
+          () => resolve(true),
+          (error) => {
+            if (error.code === error.PERMISSION_DENIED) {
+              reject(new Error('Permission refusée'));
+            } else {
+              reject(error);
+            }
+          },
+          { timeout: 5000, enableHighAccuracy: false }
+        );
+      });
+    } catch (error) {
+      console.error('Erreur permission:', error);
+      return false;
+    }
+  }
+
+  /**
    * Vérifier si l'utilisateur a donné la permission
    */
   async checkPermission(): Promise<PermissionState> {
@@ -149,4 +185,5 @@ export class GeolocationService {
       return `${Math.round(distanceKm)} km`;
     }
   }
+
 }
