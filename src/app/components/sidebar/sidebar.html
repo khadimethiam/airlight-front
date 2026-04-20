@@ -63,9 +63,9 @@
   <!-- Section utilisateur et déconnexion -->
   <div class="sidebar-footer" *ngIf="user$ | async as user">
     <div class="user-info">
-      <img [src]="user.avatar || 'https://i.pravatar.cc/32?u=' + user.id"
-           alt="Avatar"
-           class="user-avatar">
+      <!-- ✅ Photo Google si disponible, sinon initiales -->
+      <img *ngIf="user.avatar" [src]="user.avatar" alt="Avatar" class="user-avatar">
+      <div *ngIf="!user.avatar" class="user-avatar avatar-initials">{{ getInitials(user) }}</div>
       <div class="user-details sidebar-text">
         <span class="user-name">{{ user.firstName }} {{ user.lastName }}</span>
         <span class="user-role">{{ getRoleLabel(user.role) }}</span>

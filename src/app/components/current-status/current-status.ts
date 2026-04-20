@@ -1,8 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { forkJoin, of } from 'rxjs';
-import { switchMap, catchError } from 'rxjs/operators';
+import { forkJoin, of, Subject } from 'rxjs';
+import { switchMap, catchError, takeUntil, distinctUntilChanged, filter } from 'rxjs/operators';
 import { WeatherService } from '../../services/weather';
 import { SensorService, SensorData, Sensor } from '../../services/sensor';
 import { GeolocationService } from '../../services/geolocation';
@@ -15,7 +15,7 @@ import { CurrentSensorService } from '../../services/current-sensor.service';
   templateUrl: './current-status.html',
   styleUrls: ['./current-status.css']
 })
-export class CurrentStatus implements OnInit {
+export class CurrentStatus implements OnInit, OnDestroy {
 
   public isLoading = true;
   public weatherData: any = null;
@@ -35,6 +35,8 @@ export class CurrentStatus implements OnInit {
   // ✅ Stocker la position actuelle
   private currentPosition: { latitude: number; longitude: number } | null = null;
 
+  private destroy$ = new Subject<void>();
+
   constructor(
     private weatherService: WeatherService,
     private sensorService: SensorService,
@@ -46,6 +48,43 @@ export class CurrentStatus implements OnInit {
     // ✅ VRAIE PARALLÉLISATION : Les deux en même temps !
     this.loadAllSensorsAsync(); // Charge la liste pour le sélecteur
     this.loadNearestSensor();   // Charge le capteur le plus proche
+
+    // ✅ Réagir aux changements de capteur venant de sources externes (ex: bouton header)
+    this.currentSensorService.currentSensor$.pipe(
+      takeUntil(this.destroy$),
+      distinctUntilChanged((a, b) => a?.id === b?.id),
+      filter(sensor => !!sensor && sensor.id !== this.currentSensor?.id && !this.isLoading)
+    ).subscribe(sensor => {
+      if (!sensor) return;
+      console.log('🔄 Mise à jour capteur depuis source externe:', sensor.name);
+      this.isManualSelection = false;
+      this.selectedSensorId = sensor.id;
+      this.isLoading = true;
+
+      this.loadSensorData(sensor).subscribe({
+        next: ({ weather, sensor: sensorData }) => {
+          if (weather && (weather as any).success && (weather as any).data) {
+            this.weatherData = (weather as any).data;
+          } else {
+            this.weatherData = null;
+          }
+          if (sensorData && (sensorData as any).success && (sensorData as any).data) {
+            this.latestSensorData = (sensorData as any).data;
+            this.updateAqiStatus((sensorData as any).data.airQualityIndex);
+          }
+          this.isLoading = false;
+        },
+        error: (err) => {
+          console.error('❌ Erreur mise à jour capteur externe:', err);
+          this.isLoading = false;
+        }
+      });
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   /**

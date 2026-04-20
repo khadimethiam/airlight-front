@@ -44,14 +44,15 @@
 
           <!-- Indicateurs séparés, en dehors du carrousel -->
           <div *ngIf="!isLoading" class="health-tips-indicators mt-4">
-            <button 
+            <button
               *ngFor="let tip of displayedHealthTips; let i = index"
-              type="button" 
+              type="button"
               class="indicator-dot"
-              [class.active]="i === 0"
-              [attr.data-bs-target]="'#' + carouselId" 
+              [class.active]="i === currentIndex"
+              [attr.data-bs-target]="'#' + carouselId"
               [attr.data-bs-slide-to]="i"
-              [attr.aria-label]="'Conseil ' + (i + 1)">
+              [attr.aria-label]="'Conseil ' + (i + 1)"
+              (click)="currentIndex = i">
             </button>
           </div>
 

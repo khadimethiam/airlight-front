@@ -67,6 +67,13 @@ export class Sidebar implements OnInit {
     }
   }
 
+  // ✅ Générer les initiales à partir du prénom et nom
+  getInitials(user: any): string {
+    const first = user?.firstName?.charAt(0) ?? '';
+    const last = user?.lastName?.charAt(0) ?? '';
+    return (first + last).toUpperCase() || '?';
+  }
+
   // ✅ Obtenir le label du rôle en français
   getRoleLabel(role: string): string {
     const roleLabels: { [key: string]: string } = {

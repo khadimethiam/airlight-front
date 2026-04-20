@@ -275,6 +275,18 @@
   flex-shrink: 0;
 }
 
+/* ✅ Fallback initiales quand pas de photo de profil */
+.avatar-initials {
+  background: linear-gradient(135deg, #3b82f6, #10b981);
+  color: #ffffff;
+  font-size: 0.75rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  letter-spacing: 0.5px;
+}
+
 .user-details {
   display: flex;
   flex-direction: column;

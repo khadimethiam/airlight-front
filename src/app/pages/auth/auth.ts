@@ -1,6 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterLink } from '@angular/router';
+import { Router, RouterLink, ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AuthService } from '../../services/auth';
 import { environment } from '../../../environments/environment';
@@ -12,7 +12,7 @@ import { environment } from '../../../environments/environment';
   templateUrl: './auth.html',
   styleUrls: ['./auth.css']
 })
-export class Auth {
+export class Auth implements OnInit {
   isLoginView = true;
   loginForm: FormGroup;
   registerForm: FormGroup;
@@ -28,7 +28,8 @@ export class Auth {
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private route: ActivatedRoute
   ) {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
@@ -42,6 +43,14 @@ export class Auth {
       password: ['', [Validators.required, Validators.minLength(8)]],
       confirmPassword: ['', [Validators.required]]
     });
+  }
+
+  ngOnInit(): void {
+    // ✅ Lire le query param ?mode= pour ouvrir le bon onglet depuis le header
+    const mode = this.route.snapshot.queryParamMap.get('mode');
+    if (mode === 'register') {
+      this.isLoginView = false;
+    }
   }
 
   switchTo(view: 'login' | 'register'): void {

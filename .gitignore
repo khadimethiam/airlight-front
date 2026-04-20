@@ -40,3 +40,8 @@ testem.log
 # System files
 .DS_Store
 Thumbs.db
+
+# Claude Code - fichiers locaux
+CLAUDE.md
+CLAUDE.local.md
+.claude/settings.local.json

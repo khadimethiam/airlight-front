@@ -196,6 +196,15 @@ canvas {
     font-size: 1.5rem;
   }
 
+  /* Empêche les labels de carte stats (PRÉCISION, ENTRAÎNEMENT) de couper un mot */
+  .card-body h6 {
+    font-size: 0.7rem;
+    letter-spacing: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
   .table {
     font-size: 0.875rem;
   }

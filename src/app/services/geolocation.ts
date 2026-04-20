@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Observable, throwError } from 'rxjs';
+import { Observable, throwError, BehaviorSubject } from 'rxjs';
 
 export interface GeolocationPosition {
   latitude: number;
@@ -8,12 +8,64 @@ export interface GeolocationPosition {
   timestamp: number;
 }
 
+export interface LocationState {
+  status: 'idle' | 'loading' | 'success' | 'error';
+  errorMessage?: string;
+  position?: GeolocationPosition;
+}
+
 @Injectable({
   providedIn: 'root'
 })
 export class GeolocationService {
 
+  private locationStateSubject = new BehaviorSubject<LocationState>({ status: 'idle' });
+  public locationState$ = this.locationStateSubject.asObservable();
+
   constructor() { }
+
+  /**
+   * Relance la géolocalisation à la demande et met à jour locationState$
+   */
+  refreshLocation(): void {
+    if (!navigator.geolocation) {
+      this.locationStateSubject.next({
+        status: 'error',
+        errorMessage: 'Géolocalisation non supportée par votre navigateur'
+      });
+      return;
+    }
+
+    this.locationStateSubject.next({ status: 'loading' });
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const geoPosition: GeolocationPosition = {
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude,
+          accuracy: position.coords.accuracy,
+          timestamp: position.timestamp
+        };
+        this.locationStateSubject.next({ status: 'success', position: geoPosition });
+      },
+      (error) => {
+        let errorMessage = 'Erreur de géolocalisation';
+        switch (error.code) {
+          case error.PERMISSION_DENIED:
+            errorMessage = 'Permission refusée — activez la géolocalisation dans votre navigateur';
+            break;
+          case error.POSITION_UNAVAILABLE:
+            errorMessage = 'Position non disponible';
+            break;
+          case error.TIMEOUT:
+            errorMessage = 'Délai dépassé — réessayez';
+            break;
+        }
+        this.locationStateSubject.next({ status: 'error', errorMessage });
+      },
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+    );
+  }
 
   /**
    * Obtenir la position actuelle de l'utilisateur

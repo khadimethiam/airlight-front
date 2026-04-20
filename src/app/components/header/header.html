@@ -20,18 +20,57 @@
         
         <!-- On utilise *ngIf pour afficher conditionnellement les boutons -->
         <!-- Le 'let user' crée une variable locale 'user' avec les données de l'observable -->
+        <!-- ✅ Bouton de géolocalisation manuelle - toujours visible -->
+        <li class="nav-item ms-lg-2" *ngIf="locationState$ | async as state">
+          <!-- Idle : bouton principal -->
+          <button *ngIf="state.status === 'idle'"
+                  class="btn-geolocation"
+                  (click)="requestGeolocation()"
+                  title="Trouver le capteur le plus proche">
+            <i class="fas fa-location-arrow me-1"></i>
+            <span class="d-none d-lg-inline">Ma position</span>
+          </button>
+          <!-- Loading : spinner -->
+          <button *ngIf="state.status === 'loading'"
+                  class="btn-geolocation btn-geolocation-loading"
+                  disabled>
+            <span class="spinner-border spinner-border-sm me-1" role="status"></span>
+            <span class="d-none d-lg-inline">Localisation...</span>
+          </button>
+          <!-- Success : capteur trouvé -->
+          <button *ngIf="state.status === 'success'"
+                  class="btn-geolocation btn-geolocation-success"
+                  (click)="requestGeolocation()"
+                  [title]="nearestSensorName || 'Capteur sélectionné'">
+            <i class="fas fa-check-circle me-1"></i>
+            <span class="d-none d-lg-inline">{{ nearestSensorName || 'Capteur sélectionné' }}</span>
+          </button>
+          <!-- Error : réessayer -->
+          <button *ngIf="state.status === 'error'"
+                  class="btn-geolocation btn-geolocation-error"
+                  (click)="requestGeolocation()"
+                  [title]="state.errorMessage">
+            <i class="fas fa-exclamation-circle me-1"></i>
+            <span class="d-none d-lg-inline">Réessayer</span>
+          </button>
+        </li>
+
         <ng-container *ngIf="user$ | async as user; else notLoggedIn">
           <!-- **SI L'UTILISATEUR EST CONNECTÉ** -->
-          <li class="nav-item dropdown">
+
+          <!-- Dropdown utilisateur -->
+          <li class="nav-item dropdown ms-lg-2">
             <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-              <img [src]="user.avatar || 'https://i.pravatar.cc/32?u=' + user.id" alt="Avatar" class="rounded-circle me-2" width="32" height="32">
+              <!-- Photo Google si disponible, sinon initiales -->
+              <img *ngIf="user.avatar" [src]="user.avatar" alt="Avatar" class="rounded-circle me-2" width="32" height="32">
+              <div *ngIf="!user.avatar" class="avatar-initials me-2">{{ getInitials(user) }}</div>
               {{ user.firstName }}
             </a>
             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
               <li><a class="dropdown-item" routerLink="/dashboard"><i class="fas fa-tachometer-alt fa-fw me-2"></i>Dashboard</a></li>
               <li><hr class="dropdown-divider"></li>
               <!-- Nous ajouterons la méthode de déconnexion ici plus tard -->
-              <li><a (click)="logout()"class="dropdown-item" href="#"><i class="fas fa-sign-out-alt fa-fw me-2"></i>Déconnexion</a></li>
+              <li><a (click)="logout()" class="dropdown-item" href="#"><i class="fas fa-sign-out-alt fa-fw me-2"></i>Déconnexion</a></li>
             </ul>
           </li>
         </ng-container>
@@ -39,10 +78,10 @@
         <ng-template #notLoggedIn>
           <!-- **SI L'UTILISATEUR N'EST PAS CONNECTÉ** -->
           <li class="nav-item mt-2 mt-lg-0 ms-lg-3">
-            <a class="btn btn-outline-primary px-4" routerLink="/auth">Se connecter</a>
+            <a class="btn btn-outline-primary px-4" routerLink="/auth" [queryParams]="{mode: 'login'}">Se connecter</a>
           </li>
           <li class="nav-item mt-2 mt-lg-0 ms-lg-2">
-            <a class="btn btn-primary text-white px-4" routerLink="/auth">S'enregistrer</a>
+            <a class="btn btn-primary text-white px-4" routerLink="/auth" [queryParams]="{mode: 'register'}">S'enregistrer</a>
           </li>
         </ng-template>
       </ul>

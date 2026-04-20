@@ -1,6 +1,6 @@
 // src/app/components/health-tips/health-tips.ts
 
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, NgZone } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Subscription } from 'rxjs';
 import { SensorService } from '../../services/sensor';
@@ -164,11 +164,14 @@ export class HealthTips implements OnInit, OnDestroy {
   public displayedHealthTips: HealthTip[] = [];
   public isLoading = true;
   public carouselId = 'healthCarousel';
+  // ✅ Index de la diapositive active pour synchroniser les points indicateurs
+  public currentIndex = 0;
   private sensorSubscription?: Subscription;
 
   constructor(
     private sensorService: SensorService,
-    private currentSensorService: CurrentSensorService
+    private currentSensorService: CurrentSensorService,
+    private zone: NgZone
   ) {}
 
   ngOnInit(): void {
@@ -183,6 +186,7 @@ export class HealthTips implements OnInit, OnDestroy {
           console.log('⏳ Health Tips - En attente de capteur, conseils génériques');
           this.filterAndSortTips(50); // AQI neutre par défaut
           this.isLoading = false;
+          this.attachCarouselListener();
         }
       }
     );
@@ -197,6 +201,7 @@ export class HealthTips implements OnInit, OnDestroy {
       console.log('⏳ Health Tips - Aucun capteur, affichage conseils génériques');
       this.filterAndSortTips(50);
       this.isLoading = false;
+      this.attachCarouselListener();
     }
   }
 
@@ -206,6 +211,7 @@ export class HealthTips implements OnInit, OnDestroy {
       console.warn('⚠️ Health Tips - SensorId invalide');
       this.filterAndSortTips(50);
       this.isLoading = false;
+      this.attachCarouselListener();
       return;
     }
 
@@ -222,17 +228,37 @@ export class HealthTips implements OnInit, OnDestroy {
           this.filterAndSortTips(50);
         }
         this.isLoading = false;
+        this.attachCarouselListener();
       },
       error: (err) => {
         console.error('❌ Health Tips - Erreur chargement:', err);
         this.filterAndSortTips(50);
         this.isLoading = false;
+        this.attachCarouselListener();
       }
     });
   }
 
+  // ✅ Attache l'écouteur Bootstrap pour synchroniser l'index actif des points
+  private attachCarouselListener(): void {
+    setTimeout(() => {
+      const carouselEl = document.getElementById(this.carouselId);
+      if (carouselEl) {
+        carouselEl.addEventListener('slid.bs.carousel', (event: any) => {
+          // ✅ NgZone.run() force la détection de changements Angular
+          // car l'événement Bootstrap est déclenché hors de la zone Angular
+          this.zone.run(() => {
+            this.currentIndex = event.to;
+          });
+        });
+      }
+    }, 100);
+  }
+
   // ✅ NOUVELLE MÉTHODE : Filtre selon AQI puis trie
   filterAndSortTips(aqi: number): void {
+    // ✅ Réinitialiser l'index au changement de liste de conseils
+    this.currentIndex = 0;
     // ✅ Validation de l'AQI
     if (aqi === null || aqi === undefined || isNaN(aqi)) {
       console.warn('⚠️ Health Tips - AQI invalide, utilisation valeur par défaut');
